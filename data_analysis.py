@@ -15,322 +15,335 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class RecruitingDataAnalyzer:
-def __init__(self, data_path):
-self.data_path = data_path
-self.jobs_data = None
-self.prospects_data = None
-self.applicants_data = None
-self.unified_dataset = None
+    def __init__(self, data_path):
+        self.data_path = data_path
+        self.jobs_data = None
+        self.prospects_data = None
+        self.applicants_data = None
+        self.unified_dataset = None
 
-def load_data(self):
-"""Carrega todos os arquivos JSON"""
-print("Carregando dados...")
+    def load_data(self):
+        """Carrega todos os arquivos JSON"""
+        print("Carregando dados...")
+        
+        # Carregar vagas
+        with open(f'{self.data_path}/vagas.json', 'r', encoding='utf-8') as f:
+            self.jobs_data = pd.DataFrame(json.load(f))
+        
+        # Carregar prospecções
+        with open(f'{self.data_path}/prospects.json', 'r', encoding='utf-8') as f:
+            self.prospects_data = pd.DataFrame(json.load(f))
+        
+        # Carregar candidatos
+        with open(f'{self.data_path}/applicants.json', 'r', encoding='utf-8') as f:
+            self.applicants_data = pd.DataFrame(json.load(f))
+        
+        print(f"✅ Vagas carregadas: {len(self.jobs_data)} registros")
+        print(f"✅ Prospecções carregadas: {len(self.prospects_data)} registros")
+        print(f"✅ Candidatos carregados: {len(self.applicants_data)} registros")
 
-# Carregar vagas
-with open(f'{self.data_path}/vagas.json', 'r', encoding='utf-8') as f:
-self.jobs_data = json.load(f)
-print(f" Vagas carregadas: {len(self.jobs_data)} registros")
+    def analyze_jobs_data(self):
+        """Análise dos dados de vagas"""
+        print("\n" + "="*50)
+        print("ANÁLISE DOS DADOS DE VAGAS")
+        print("="*50)
+        
+        print(f"\n📊 Resumo dos dados:")
+        print(f"Total de vagas: {len(self.jobs_data)}")
+        print(f"Colunas disponíveis: {list(self.jobs_data.columns)}")
+        
+        # Análise de tipos de contratação
+        if 'tipo_contratacao' in self.jobs_data.columns:
+            print(f"\n💼 Tipos de contratação:")
+            contract_types = self.jobs_data['tipo_contratacao'].value_counts()
+            for contract_type, count in contract_types.head(10).items():
+                percentage = (count / len(self.jobs_data)) * 100
+                print(f"  {contract_type}: {count} ({percentage:.1f}%)")
+        
+        # Análise de níveis profissionais
+        if 'nivel_profissional' in self.jobs_data.columns:
+            print(f"\n👔 Níveis profissionais:")
+            levels = self.jobs_data['nivel_profissional'].value_counts()
+            for level, count in levels.items():
+                percentage = (count / len(self.jobs_data)) * 100
+                print(f"  {level}: {count} ({percentage:.1f}%)")
+        
+        # Análise de idiomas
+        if 'nivel_ingles' in self.jobs_data.columns:
+            print(f"\n🇺🇸 Níveis de inglês:")
+            english_levels = self.jobs_data['nivel_ingles'].value_counts()
+            for level, count in english_levels.items():
+                percentage = (count / len(self.jobs_data)) * 100
+                print(f"  {level}: {count} ({percentage:.1f}%)")
+        
+        if 'nivel_espanhol' in self.jobs_data.columns:
+            print(f"\n🇪🇸 Níveis de espanhol:")
+            spanish_levels = self.jobs_data['nivel_espanhol'].value_counts()
+            for level, count in spanish_levels.items():
+                percentage = (count / len(self.jobs_data)) * 100
+                print(f"  {level}: {count} ({percentage:.1f}%)")
 
-# Carregar prospecções
-with open(f'{self.data_path}/prospects.json', 'r', encoding='utf-8') as f:
-self.prospects_data = json.load(f)
-print(f" Prospecções carregadas: {len(self.prospects_data)} registros")
+    def analyze_prospects_data(self):
+        """Análise dos dados de prospecções"""
+        print("\n" + "="*50)
+        print("ANÁLISE DOS DADOS DE PROSPECÇÕES")
+        print("="*50)
+        
+        print(f"\n📊 Resumo dos dados:")
+        print(f"Total de prospecções: {len(self.prospects_data)}")
+        print(f"Colunas disponíveis: {list(self.prospects_data.columns)}")
+        
+        # Análise de status
+        if 'status' in self.prospects_data.columns:
+            print(f"\n📈 Status das prospecções:")
+            status_counts = self.prospects_data['status'].value_counts()
+            for status, count in status_counts.items():
+                percentage = (count / len(self.prospects_data)) * 100
+                print(f"  {status}: {count} ({percentage:.1f}%)")
+        
+        # Análise de fontes
+        if 'fonte' in self.prospects_data.columns:
+            print(f"\n🔍 Fontes das prospecções:")
+            sources = self.prospects_data['fonte'].value_counts()
+            for source, count in sources.head(10).items():
+                percentage = (count / len(self.prospects_data)) * 100
+                print(f"  {source}: {count} ({percentage:.1f}%)")
 
-# Carregar candidatos (amostra para análise inicial)
-print("Carregando candidatos (arquivo grande)...")
-with open(f'{self.data_path}/applicants.json', 'r', encoding='utf-8') as f:
-self.applicants_data = json.load(f)
-print(f" Candidatos carregados: {len(self.applicants_data)} registros")
+    def analyze_applicants_data(self):
+        """Análise dos dados de candidatos"""
+        print("\n" + "="*50)
+        print("ANÁLISE DOS DADOS DE CANDIDATOS")
+        print("="*50)
+        
+        print(f"\n📊 Resumo dos dados:")
+        print(f"Total de candidatos: {len(self.applicants_data)}")
+        print(f"Colunas disponíveis: {list(self.applicants_data.columns)}")
+        
+        # Análise de localização
+        if 'cidade' in self.applicants_data.columns:
+            print(f"\n🌍 Top 10 cidades dos candidatos:")
+            cities = self.applicants_data['cidade'].value_counts()
+            for city, count in cities.head(10).items():
+                percentage = (count / len(self.applicants_data)) * 100
+                print(f"  {city}: {count} ({percentage:.1f}%)")
+        
+        # Análise de níveis profissionais
+        if 'nivel_profissional' in self.applicants_data.columns:
+            print(f"\n👔 Níveis profissionais dos candidatos:")
+            levels = self.applicants_data['nivel_profissional'].value_counts()
+            for level, count in levels.items():
+                percentage = (count / len(self.applicants_data)) * 100
+                print(f"  {level}: {count} ({percentage:.1f}%)")
+        
+        # Análise de idiomas
+        if 'nivel_ingles' in self.applicants_data.columns:
+            print(f"\n🇺🇸 Níveis de inglês dos candidatos:")
+            english_levels = self.applicants_data['nivel_ingles'].value_counts()
+            for level, count in english_levels.items():
+                percentage = (count / len(self.applicants_data)) * 100
+                print(f"  {level}: {count} ({percentage:.1f}%)")
+        
+        if 'nivel_espanhol' in self.applicants_data.columns:
+            print(f"\n🇪🇸 Níveis de espanhol dos candidatos:")
+            spanish_levels = self.applicants_data['nivel_espanhol'].value_counts()
+            for level, count in spanish_levels.items():
+                percentage = (count / len(self.applicants_data)) * 100
+                print(f"  {level}: {count} ({percentage:.1f}%)")
 
-def analyze_data_structure(self):
-"""Analisa a estrutura dos dados"""
-print("\n=== ANÁLISE DA ESTRUTURA DOS DADOS ===")
+    def create_unified_dataset(self):
+        """Cria dataset unificado para análise"""
+        print("\n" + "="*50)
+        print("CRIAÇÃO DO DATASET UNIFICADO")
+        print("="*50)
+        
+        # Mesclar dados de vagas e prospecções
+        print("Mesclando dados de vagas e prospecções...")
+        merged_data = pd.merge(
+            self.prospects_data,
+            self.jobs_data,
+            left_on='vaga_id',
+            right_on='id',
+            how='inner'
+        )
+        print(f"✅ Dados mesclados: {len(merged_data)} registros")
+        
+        # Mesclar com dados de candidatos
+        print("Mesclando com dados de candidatos...")
+        self.unified_dataset = pd.merge(
+            merged_data,
+            self.applicants_data,
+            left_on='candidato_id',
+            right_on='id',
+            how='inner'
+        )
+        print(f"✅ Dataset unificado criado: {len(self.unified_dataset)} registros")
+        
+        # Adicionar coluna de target (contratado)
+        if 'status' in self.unified_dataset.columns:
+            self.unified_dataset['contratado'] = (
+                self.unified_dataset['status'] == 'contratado'
+            ).astype(int)
+            
+            contratados = self.unified_dataset['contratado'].sum()
+            total = len(self.unified_dataset)
+            taxa_contratacao = (contratados / total) * 100
+            
+            print(f"\n🎯 Taxa de contratação: {contratados}/{total} ({taxa_contratacao:.2f}%)")
 
-# Análise das vagas
-print("\n1. ESTRUTURA DAS VAGAS:")
-sample_job = list(self.jobs_data.values())[0]
-print(f" Campos principais: {list(sample_job.keys())}")
+    def analyze_unified_dataset(self):
+        """Análise do dataset unificado"""
+        print("\n" + "="*50)
+        print("ANÁLISE DO DATASET UNIFICADO")
+        print("="*50)
+        
+        if self.unified_dataset is None:
+            print("❌ Dataset unificado não foi criado ainda!")
+            return
+        
+        print(f"\n📊 Resumo geral:")
+        print(f"Total de registros: {len(self.unified_dataset)}")
+        print(f"Total de colunas: {len(self.unified_dataset.columns)}")
+        
+        # Análise do target
+        if 'contratado' in self.unified_dataset.columns:
+            contratados = self.unified_dataset['contratado'].sum()
+            nao_contratados = len(self.unified_dataset) - contratados
+            
+            print(f"\n🎯 Distribuição do target:")
+            print(f"  Contratados: {contratados} ({(contratados/len(self.unified_dataset)*100):.2f}%)")
+            print(f"  Não contratados: {nao_contratados} ({(nao_contratados/len(self.unified_dataset)*100):.2f}%)")
+        
+        # Análise de compatibilidade
+        self.analyze_compatibility()
+        
+        # Análise de padrões
+        self.analyze_patterns()
 
-# Análise das prospecções
-print("\n2. ESTRUTURA DAS PROSPECÇÕES:")
-sample_prospect = list(self.prospects_data.values())[0]
-print(f" Campos principais: {list(sample_prospect.keys())}")
-if 'prospects' in sample_prospect:
-print(f" Número de candidatos por vaga: {len(sample_prospect['prospects'])}")
+    def analyze_compatibility(self):
+        """Análise de compatibilidade candidato-vaga"""
+        print(f"\n🔍 Análise de compatibilidade:")
+        
+        # Compatibilidade de nível profissional
+        if all(col in self.unified_dataset.columns for col in ['nivel_profissional_x', 'nivel_profissional_y']):
+            nivel_match = (
+                self.unified_dataset['nivel_profissional_x'] == 
+                self.unified_dataset['nivel_profissional_y']
+            )
+            match_rate = nivel_match.mean() * 100
+            print(f"  Compatibilidade nível profissional: {match_rate:.1f}%")
+        
+        # Compatibilidade de inglês
+        if all(col in self.unified_dataset.columns for col in ['nivel_ingles_x', 'nivel_ingles_y']):
+            ingles_match = (
+                self.unified_dataset['nivel_ingles_x'] == 
+                self.unified_dataset['nivel_ingles_y']
+            )
+            match_rate = ingles_match.mean() * 100
+            print(f"  Compatibilidade inglês: {match_rate:.1f}%")
+        
+        # Compatibilidade de espanhol
+        if all(col in self.unified_dataset.columns for col in ['nivel_espanhol_x', 'nivel_espanhol_y']):
+            espanhol_match = (
+                self.unified_dataset['nivel_espanhol_x'] == 
+                self.unified_dataset['nivel_espanhol_y']
+            )
+            match_rate = espanhol_match.mean() * 100
+            print(f"  Compatibilidade espanhol: {match_rate:.1f}%")
 
-# Análise dos candidatos
-print("\n3. ESTRUTURA DOS CANDIDATOS:")
-sample_applicant = list(self.applicants_data.values())[0]
-print(f" Campos principais: {list(sample_applicant.keys())}")
+    def analyze_patterns(self):
+        """Análise de padrões nos dados"""
+        print(f"\n📈 Análise de padrões:")
+        
+        if 'contratado' not in self.unified_dataset.columns:
+            return
+        
+        # Análise por tipo de contratação
+        if 'tipo_contratacao' in self.unified_dataset.columns:
+            print(f"\n💼 Taxa de contratação por tipo:")
+            for contract_type in self.unified_dataset['tipo_contratacao'].unique():
+                subset = self.unified_dataset[
+                    self.unified_dataset['tipo_contratacao'] == contract_type
+                ]
+                if len(subset) > 10:  # Apenas tipos com mais de 10 registros
+                    rate = subset['contratado'].mean() * 100
+                    print(f"  {contract_type}: {rate:.1f}% ({len(subset)} registros)")
+        
+        # Análise por nível profissional
+        if 'nivel_profissional_x' in self.unified_dataset.columns:
+            print(f"\n👔 Taxa de contratação por nível:")
+            for level in self.unified_dataset['nivel_profissional_x'].unique():
+                subset = self.unified_dataset[
+                    self.unified_dataset['nivel_profissional_x'] == level
+                ]
+                if len(subset) > 10:
+                    rate = subset['contratado'].mean() * 100
+                    print(f"  {level}: {rate:.1f}% ({len(subset)} registros)")
 
-def extract_features_from_jobs(self):
-"""Extrai features das vagas"""
-print("\n=== EXTRAINDO FEATURES DAS VAGAS ===")
+    def save_analysis_report(self, output_path="analysis_report.txt"):
+        """Salva relatório de análise"""
+        print(f"\n💾 Salvando relatório de análise em {output_path}...")
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write("RELATÓRIO DE ANÁLISE DE DADOS - DECISION RECRUITMENT AI\n")
+            f.write("="*60 + "\n\n")
+            f.write(f"Data da análise: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            
+            # Resumo dos dados
+            f.write("RESUMO DOS DADOS:\n")
+            f.write("-" * 30 + "\n")
+            f.write(f"Total de vagas: {len(self.jobs_data) if self.jobs_data is not None else 0}\n")
+            f.write(f"Total de prospecções: {len(self.prospects_data) if self.prospects_data is not None else 0}\n")
+            f.write(f"Total de candidatos: {len(self.applicants_data) if self.applicants_data is not None else 0}\n")
+            
+            if self.unified_dataset is not None:
+                f.write(f"Total de registros unificados: {len(self.unified_dataset)}\n")
+                if 'contratado' in self.unified_dataset.columns:
+                    contratados = self.unified_dataset['contratado'].sum()
+                    taxa = (contratados / len(self.unified_dataset)) * 100
+                    f.write(f"Taxa de contratação: {taxa:.2f}%\n")
+        
+        print(f"✅ Relatório salvo em {output_path}")
 
-jobs_features = []
-
-for job_id, job_data in self.jobs_data.items():
-features = {
-'job_id': job_id,
-'vaga_sap': job_data.get('informacoes_basicas', {}).get('vaga_sap', 'Não'),
-'cliente': job_data.get('informacoes_basicas', {}).get('cliente', ''),
-'nivel_profissional': job_data.get('perfil_vaga', {}).get('nivel profissional', ''),
-'nivel_academico': job_data.get('perfil_vaga', {}).get('nivel_academico', ''),
-'nivel_ingles': job_data.get('perfil_vaga', {}).get('nivel_ingles', ''),
-'nivel_espanhol': job_data.get('perfil_vaga', {}).get('nivel_espanhol', ''),
-'areas_atuacao': job_data.get('perfil_vaga', {}).get('areas_atuacao', ''),
-'cidade': job_data.get('perfil_vaga', {}).get('cidade', ''),
-'estado': job_data.get('perfil_vaga', {}).get('estado', ''),
-'titulo_vaga': job_data.get('informacoes_basicas', {}).get('titulo_vaga', ''),
-'tipo_contratacao': job_data.get('informacoes_basicas', {}).get('tipo_contratacao', ''),
-'data_requisicao': job_data.get('informacoes_basicas', {}).get('data_requicisao', ''),
-'principais_atividades': job_data.get('perfil_vaga', {}).get('principais_atividades', ''),
-'competencia_tecnicas': job_data.get('perfil_vaga', {}).get('competencia_tecnicas_e_comportamentais', '')
-}
-jobs_features.append(features)
-
-self.jobs_df = pd.DataFrame(jobs_features)
-print(f" Features das vagas extraídas: {len(self.jobs_df)} registros")
-return self.jobs_df
-
-def extract_features_from_prospects(self):
-"""Extrai features das prospecções"""
-print("\n=== EXTRAINDO FEATURES DAS PROSPECÇÕES ===")
-
-prospects_features = []
-
-for job_id, prospect_data in self.prospects_data.items():
-if 'prospects' in prospect_data:
-for prospect in prospect_data['prospects']:
-features = {
-'job_id': job_id,
-'candidate_id': prospect.get('codigo', ''),
-'candidate_name': prospect.get('nome', ''),
-'situacao_candidato': prospect.get('situacao_candidado', ''),
-'data_candidatura': prospect.get('data_candidatura', ''),
-'ultima_atualizacao': prospect.get('ultima_atualizacao', ''),
-'comentario': prospect.get('comentario', ''),
-'recrutador': prospect.get('recrutador', '')
-}
-prospects_features.append(features)
-
-self.prospects_df = pd.DataFrame(prospects_features)
-print(f" Features das prospecções extraídas: {len(self.prospects_df)} registros")
-return self.prospects_df
-
-def extract_features_from_applicants(self):
-"""Extrai features dos candidatos"""
-print("\n=== EXTRAINDO FEATURES DOS CANDIDATOS ===")
-
-applicants_features = []
-
-for candidate_id, applicant_data in self.applicants_data.items():
-features = {
-'candidate_id': candidate_id,
-'nome': applicant_data.get('infos_basicas', {}).get('nome', ''),
-'email': applicant_data.get('infos_basicas', {}).get('email', ''),
-'telefone': applicant_data.get('infos_basicas', {}).get('telefone', ''),
-'data_criacao': applicant_data.get('infos_basicas', {}).get('data_criacao', ''),
-'data_atualizacao': applicant_data.get('infos_basicas', {}).get('data_atualizacao', ''),
-'inserido_por': applicant_data.get('infos_basicas', {}).get('inserido_por', ''),
-'objetivo_profissional': applicant_data.get('infos_basicas', {}).get('objetivo_profissional', ''),
-'local': applicant_data.get('infos_basicas', {}).get('local', ''),
-'data_nascimento': applicant_data.get('informacoes_pessoais', {}).get('data_nascimento', ''),
-'sexo': applicant_data.get('informacoes_pessoais', {}).get('sexo', ''),
-'estado_civil': applicant_data.get('informacoes_pessoais', {}).get('estado_civil', ''),
-'pcd': applicant_data.get('informacoes_pessoais', {}).get('pcd', ''),
-'titulo_profissional': applicant_data.get('informacoes_profissionais', {}).get('titulo_profissional', ''),
-'area_atuacao': applicant_data.get('informacoes_profissionais', {}).get('area_atuacao', ''),
-'conhecimentos_tecnicos': applicant_data.get('informacoes_profissionais', {}).get('conhecimentos_tecnicos', ''),
-'certificacoes': applicant_data.get('informacoes_profissionais', {}).get('certificacoes', ''),
-'remuneracao': applicant_data.get('informacoes_profissionais', {}).get('remuneracao', ''),
-'nivel_profissional': applicant_data.get('informacoes_profissionais', {}).get('nivel_profissional', ''),
-'nivel_academico': applicant_data.get('formacao_e_idiomas', {}).get('nivel_academico', ''),
-'nivel_ingles': applicant_data.get('formacao_e_idiomas', {}).get('nivel_ingles', ''),
-'nivel_espanhol': applicant_data.get('formacao_e_idiomas', {}).get('nivel_espanhol', ''),
-'cv_pt': applicant_data.get('cv_pt', ''),
-'cv_en': applicant_data.get('cv_en', '')
-}
-applicants_features.append(features)
-
-self.applicants_df = pd.DataFrame(applicants_features)
-print(f" Features dos candidatos extraídas: {len(self.applicants_df)} registros")
-return self.applicants_df
-
-def create_unified_dataset(self):
-"""Cria dataset unificado para análise preditiva"""
-print("\n=== CRIANDO DATASET UNIFICADO ===")
-
-# Merge das tabelas
-# 1. Prospects + Jobs
-merged = self.prospects_df.merge(
-self.jobs_df, 
-on='job_id', 
-how='left'
-)
-
-# 2. Adicionar dados dos candidatos
-merged = merged.merge(
-self.applicants_df, 
-on='candidate_id', 
-how='left'
-)
-
-self.unified_dataset = merged
-print(f" Dataset unificado criado: {len(self.unified_dataset)} registros")
-
-return self.unified_dataset
-
-def analyze_target_variable(self):
-"""Analisa a variável target (situação do candidato)"""
-print("\n=== ANÁLISE DA VARIÁVEL TARGET ===")
-
-if self.unified_dataset is not None:
-# Contar situações dos candidatos
-situacoes = self.unified_dataset['situacao_candidato'].value_counts()
-print("\nDistribuição das situações dos candidatos:")
-for situacao, count in situacoes.items():
-percentage = (count / len(self.unified_dataset)) * 100
-print(f" {situacao}: {count} ({percentage:.1f}%)")
-
-# Identificar candidatos contratados
-contratados = self.unified_dataset[
-self.unified_dataset['situacao_candidato'].str.contains('Contratado', na=False)
-]
-print(f"\n Candidatos contratados: {len(contratados)}")
-
-return situacoes
-
-def feature_engineering(self):
-"""Engenharia de features para o modelo preditivo"""
-print("\n=== ENGENHARIA DE FEATURES ===")
-
-df = self.unified_dataset.copy()
-
-# 1. Variável target binária
-df['contratado'] = df['situacao_candidato'].str.contains('Contratado', na=False).astype(int)
-
-# 2. Features de compatibilidade entre vaga e candidato
-df['nivel_profissional_match'] = (df['nivel_profissional_x'] == df['nivel_profissional_y']).astype(int)
-df['nivel_academico_match'] = (df['nivel_academico_x'] == df['nivel_academico_y']).astype(int)
-df['nivel_ingles_match'] = (df['nivel_ingles_x'] == df['nivel_ingles_y']).astype(int)
-df['nivel_espanhol_match'] = (df['nivel_espanhol_x'] == df['nivel_espanhol_y']).astype(int)
-
-# 3. Features de texto (comprimento do CV)
-df['cv_length'] = df['cv_pt'].str.len().fillna(0)
-df['has_cv_en'] = (df['cv_en'].str.len() > 0).astype(int)
-
-# 4. Features temporais
-df['data_candidatura'] = pd.to_datetime(df['data_candidatura'], errors='coerce')
-df['data_requisicao'] = pd.to_datetime(df['data_requisicao'], errors='coerce')
-df['dias_entre_requisicao_candidatura'] = (df['data_candidatura'] - df['data_requisicao']).dt.days
-
-# 5. Features categóricas
-df['is_sap_vaga'] = (df['vaga_sap'] == 'Sim').astype(int)
-df['is_pcd'] = (df['pcd'] == 'Sim').astype(int)
-
-# 6. Features de localização
-df['is_sp'] = df['estado'].str.contains('São Paulo', na=False).astype(int)
-
-# 7. Features de remuneração
-df['remuneracao_numeric'] = pd.to_numeric(df['remuneracao'], errors='coerce').fillna(0)
-
-self.features_df = df
-print(f" Features criadas: {len(df.columns)} colunas")
-
-return df
-
-def get_model_features(self):
-"""Retorna features selecionadas para o modelo"""
-feature_columns = [
-'is_sap_vaga',
-'nivel_profissional_match',
-'nivel_academico_match', 
-'nivel_ingles_match',
-'nivel_espanhol_match',
-'cv_length',
-'has_cv_en',
-'dias_entre_requisicao_candidatura',
-'is_pcd',
-'is_sp',
-'remuneracao_numeric'
-]
-
-# Adicionar features categóricas codificadas
-categorical_features = [
-'cliente', 'nivel_profissional_x', 'nivel_academico_x',
-'nivel_ingles_x', 'nivel_espanhol_x', 'area_atuacao',
-'cidade', 'tipo_contratacao', 'titulo_profissional',
-'nivel_profissional_y', 'nivel_academico_y', 'nivel_ingles_y',
-'nivel_espanhol_y', 'recrutador'
-]
-
-return feature_columns, categorical_features
-
-def generate_summary_report(self):
-"""Gera relatório resumo da análise"""
-print("\n" + "="*60)
-print("RELATÓRIO RESUMO - ANÁLISE DE DADOS PARA MODELO PREDITIVO")
-print("="*60)
-
-print(f"\n DADOS CARREGADOS:")
-print(f" • Vagas: {len(self.jobs_data):,}")
-print(f" • Prospecções: {len(self.prospects_data):,}")
-print(f" • Candidatos: {len(self.applicants_data):,}")
-
-if hasattr(self, 'unified_dataset'):
-print(f"\n DATASET UNIFICADO:")
-print(f" • Total de registros: {len(self.unified_dataset):,}")
-print(f" • Colunas: {len(self.unified_dataset.columns)}")
-
-# Taxa de contratação
-if 'contratado' in self.unified_dataset.columns:
-taxa_contratacao = self.unified_dataset['contratado'].mean() * 100
-print(f" • Taxa de contratação: {taxa_contratacao:.2f}%")
-
-print(f"\n VARIÁVEL TARGET:")
-if hasattr(self, 'unified_dataset'):
-situacoes = self.unified_dataset['situacao_candidato'].value_counts()
-for situacao, count in situacoes.head(5).items():
-print(f" • {situacao}: {count:,}")
-
-print(f"\n FEATURES PARA MODELO:")
-feature_columns, categorical_features = self.get_model_features()
-print(f" • Features numéricas: {len(feature_columns)}")
-print(f" • Features categóricas: {len(categorical_features)}")
-
-print(f"\n PRÓXIMOS PASSOS:")
-print(f" 1. Codificar variáveis categóricas")
-print(f" 2. Tratar valores faltantes")
-print(f" 3. Dividir em treino/teste")
-print(f" 4. Treinar modelo preditivo")
-print(f" 5. Avaliar performance")
+    def run_full_analysis(self):
+        """Executa análise completa"""
+        print("🚀 INICIANDO ANÁLISE COMPLETA DOS DADOS")
+        print("="*60)
+        
+        try:
+            # Carregar dados
+            self.load_data()
+            
+            # Análises individuais
+            self.analyze_jobs_data()
+            self.analyze_prospects_data()
+            self.analyze_applicants_data()
+            
+            # Dataset unificado
+            self.create_unified_dataset()
+            self.analyze_unified_dataset()
+            
+            # Salvar relatório
+            self.save_analysis_report()
+            
+            print("\n" + "="*60)
+            print("✅ ANÁLISE COMPLETA FINALIZADA!")
+            print("="*60)
+            
+        except Exception as e:
+            print(f"\n❌ Erro durante a análise: {e}")
+            raise
 
 def main():
-"""Função principal"""
-data_path = "/Users/kielmartins/Desktop/code/dev/fiap-final"
-
-# Inicializar analisador
-analyzer = RecruitingDataAnalyzer(data_path)
-
-# Executar análise completa
-analyzer.load_data()
-analyzer.analyze_data_structure()
-analyzer.extract_features_from_jobs()
-analyzer.extract_features_from_prospects()
-analyzer.extract_features_from_applicants()
-analyzer.create_unified_dataset()
-analyzer.analyze_target_variable()
-analyzer.feature_engineering()
-analyzer.generate_summary_report()
-
-# Salvar dataset preparado
-if hasattr(analyzer, 'features_df'):
-output_file = f"{data_path}/dataset_preparado.csv"
-analyzer.features_df.to_csv(output_file, index=False, encoding='utf-8')
-print(f"\n Dataset salvo em: {output_file}")
-
-return analyzer
+    """Função principal"""
+    print("Decision Recruitment AI - Análise de Dados")
+    print("="*50)
+    
+    # Caminho dos dados (assumindo que estão na raiz do projeto)
+    data_path = "."
+    
+    # Criar analisador e executar análise
+    analyzer = RecruitingDataAnalyzer(data_path)
+    analyzer.run_full_analysis()
 
 if __name__ == "__main__":
-analyzer = main()
+    main()

@@ -16,7 +16,6 @@
     "nivel_espanhol_compatibility",
     "cv_has_technical_keywords",
     "cv_has_certifications",
-    "cliente_encoded",
     "nivel_profissional_x_encoded",
     "nivel_academico_x_encoded",
     "nivel_ingles_x_encoded",
@@ -28,11 +27,9 @@
     "nivel_profissional_y_encoded",
     "nivel_academico_y_encoded",
     "nivel_ingles_y_encoded",
-    "nivel_espanhol_y_encoded",
-    "recrutador_encoded"
+    "nivel_espanhol_y_encoded"
   ],
   "categorical_columns": [
-    "cliente",
     "nivel_profissional_x",
     "nivel_academico_x",
     "nivel_ingles_x",
@@ -44,10 +41,9 @@
     "nivel_profissional_y",
     "nivel_academico_y",
     "nivel_ingles_y",
-    "nivel_espanhol_y",
-    "recrutador"
+    "nivel_espanhol_y"
   ],
   "model_type": "XGBoost",
-  "training_date": "2025-09-14T11:39:25.039342",
+  "training_date": "2025-09-28T18:05:24.391571",
   "is_trained": true
 }

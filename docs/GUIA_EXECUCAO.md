@@ -267,10 +267,10 @@ Este documento explica a ordem de execução e funcionamento de cada módulo do 
 
 ---
 
-### 5. **model_pipeline.py** - Pipeline Avançado
+### 5. **main.py** - Pipeline de Treinamento
 **Pipeline mais complexo com feature engineering avançado**
 
-#### Classe: `DecisionRecruitmentModel`
+#### Classe: `DecisionRecruitmentPipeline`
 
 ##### Métodos principais:
 
@@ -427,7 +427,7 @@ mlflow ui --backend-store-uri file:./mlruns
 
 ## Próximos Passos
 
-1. **Deploy**: Usar `deploy.py` para deploy em produção
+1. **Deploy**: Usar `deploy_linux.sh` para deploy em produção
 2. **Monitoramento**: Configurar alertas de drift
 3. **Retreinamento**: Automatizar retreinamento periódico
 4. **A/B Testing**: Implementar testes de modelos

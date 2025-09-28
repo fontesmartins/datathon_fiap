@@ -38,8 +38,9 @@ Monitoramento API FastAPI Modelo Salvo
 ### Dataset Unificado
 
 - **53.759 registros** de candidatos-vagas
-- **Taxa de contratação**: 5,5% (2.984 candidatos contratados)
+- **Taxa de contratação**: 5,55% (2.984 candidatos contratados de 50.775 total)
 - **57 features** extraídas e preparadas
+- **30 features finais** após feature engineering
 
 ## Features do Modelo
 
@@ -67,7 +68,7 @@ Monitoramento API FastAPI Modelo Salvo
 ### 1. Clone o Repositório
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/fontesmartins/datathon_fiap
 cd fiap-final
 ```
 
@@ -80,7 +81,7 @@ pip install -r requirements.txt
 ### 3. Treinar o Modelo
 
 ```bash
-python model_pipeline.py
+python main.py
 ```
 
 ### 4. Executar API Localmente
@@ -92,7 +93,7 @@ python fastapi_app.py
 ### 5. Deploy com Docker
 
 ```bash
-python deploy.py
+./deploy_linux.sh
 ```
 
 ## API Endpoints
@@ -187,24 +188,31 @@ python test_unit.py
 
 ### Monitoramento
 ```bash
-python monitoring.py
+# python monitoring.py (arquivo removido)
 ```
 
 ## Performance do Modelo
 
-### Métricas de Treinamento
-- **AUC Score**: 0.8701
-- **CV AUC Score**: 0.8368 (±0.0729)
-- **Precision**: 0.74 (classe positiva)
-- **Recall**: 0.28 (classe positiva)
-- **F1-Score**: 0.41 (classe positiva)
+### Métricas de Treinamento (Último Treinamento)
+- **AUC Score**: 0.7946 (79.46% de acurácia)
+- **CV AUC Score**: 0.7512 (±0.0779) - Validação cruzada
+- **Taxa de Contratação**: 5.55% (dataset desbalanceado)
+- **Features Utilizadas**: 28 features otimizadas (removido data leakage)
+- **Algoritmo**: XGBoost com otimização bayesiana (30 trials)
+- **Data do Treinamento**: 28/09/2025
+- **Melhorias**: Removidas variáveis `cliente` e `recrutador` para evitar data leakage
 
-### Features Mais Importantes
-1. `global_compatibility_score`
-2. `nivel_profissional_compatibility`
-3. `technical_fit_score`
-4. `nivel_ingles_compatibility`
-5. `cv_has_technical_keywords`
+### Features Mais Importantes (Top 10)
+1. `tipo_contratacao_encoded` - Tipo de contratação (12.25%)
+2. `nivel_ingles_x_encoded` - Nível de inglês da vaga (10.15%)
+3. `is_sp` - Candidato em São Paulo (7.21%)
+4. `nivel_espanhol_x_encoded` - Nível de espanhol da vaga (5.37%)
+5. `cv_has_technical_keywords` - CV com palavras-chave técnicas (4.36%)
+6. `nivel_academico_x_encoded` - Nível acadêmico da vaga (4.30%)
+7. `nivel_academico_y_encoded` - Nível acadêmico do candidato (4.08%)
+8. `nivel_ingles_y_encoded` - Nível de inglês do candidato (4.07%)
+9. `area_atuacao_encoded` - Área de atuação (4.03%)
+10. `nivel_ingles_compatibility` - Compatibilidade de inglês (3.98%)
 
 ## Docker
 
@@ -259,15 +267,15 @@ README.md # Este arquivo
 requirements.txt # Dependências Python (inclui MLflow)
 Dockerfile # Configuração Docker
 .dockerignore # Arquivos ignorados no Docker
-model_pipeline.py # Pipeline de treinamento (com MLflow)
+main.py # Pipeline de treinamento (com MLflow)
 fastapi_app.py # API FastAPI (com MLflow logging)
 test_api.py # Testes da API
 test_unit.py # Testes unitários
-monitoring.py # Sistema de monitoramento (com MLflow)
-deploy.py # Script de deploy
+# monitoring.py removido (não funcional)
+deploy_linux.sh # Script de deploy para Linux
 data_analysis.py # Análise inicial dos dados
 mlflow_config.py # Configuração MLflow
-mlflow_experiments.py # Scripts de experimentos MLflow
+# mlflow_experiments.py removido (obsoleto)
 start_mlflow.py # Inicializador MLflow UI
 models/ # Modelos treinados
 xgboost_model.pkl
@@ -330,10 +338,10 @@ mlflow ui --backend-store-uri file:./mlruns
 #### 3. **Experimentos Automatizados**
 ```bash
 # Executar suite completa de experimentos
-python mlflow_experiments.py
+# python mlflow_experiments.py (arquivo removido)
 
 # Treinar modelo com MLflow tracking
-python model_pipeline.py
+python main.py
 ```
 
 #### 4. **API Integration**
@@ -344,7 +352,7 @@ python model_pipeline.py
 #### 5. **Monitoramento Avançado**
 ```bash
 # Monitorar sistema completo (incluindo MLflow)
-python monitoring.py
+# python monitoring.py (arquivo removido)
 ```
 
 ### Experimentos Disponíveis
@@ -354,26 +362,11 @@ python monitoring.py
 3. **Feature Analysis**: Analisa importância das features
 4. **Production Logging**: Registra predições em tempo real
 
-### Workflow MLflow
-
-```mermaid
-graph TD
-A[Dataset] --> B[Feature Engineering]
-B --> C[MLflow Experiment]
-C --> D[Model Training]
-D --> E[Model Registry]
-E --> F[Production API]
-F --> G[Prediction Logging]
-G --> H[Monitoring]
-H --> I[Model Retraining]
-I --> C
-```
 
 ## Próximos Passos
 
 ### Melhorias Planejadas
-- [x] **MLflow Integration** - Experiment tracking e model registry
-- [ ] Integração com ATS existente
+- [ ] **MLflow Integration** - Experiment tracking e model registry
 - [ ] Interface web para usuários
 - [ ] Modelo de recomendação de vagas
 - [ ] Análise de sentimento em CVs
@@ -382,10 +375,6 @@ I --> C
 ### Expansões
 - [ ] Suporte a mais tipos de vaga
 - [ ] Integração com LinkedIn API
-- [ ] Modelo de retenção de funcionários
-- [ ] Sistema de feedback contínuo
-- [ ] MLflow Model Serving
-- [ ] A/B Testing de modelos
 
 ## Contribuição
 
@@ -394,6 +383,55 @@ I --> C
 3. Commit suas mudanças
 4. Push para a branch
 5. Abra um Pull Request
+
+## Execução Rápida
+
+### 1. Treinamento do Modelo
+```bash
+python main.py
+```
+**Resultados esperados:**
+- Modelo salvo em `models/`
+- Otimização de hiperparâmetros (30 trials)
+- Logs do MLflow em `mlruns/`
+- AUC Score: ~0.79
+
+### 2. Executar API
+```bash
+python fastapi_app.py
+```
+**Endpoints disponíveis:**
+- `GET /health` - Health check
+- `POST /predict` - Predição individual
+- `POST /predict_batch` - Predição em lote
+- `GET /model_info` - Informações do modelo
+- `GET /feature_importance` - Importância das features
+
+### 3. Testar API
+```bash
+# Health check
+curl http://localhost:8000/health
+
+# Predição
+curl -X POST "http://localhost:8000/predict" \
+  -H "Content-Type: application/json" \
+  -d @test_prediction.json
+```
+
+### 4. Deploy com Docker
+```bash
+./deploy_linux.sh
+```
+
+## Documentação Adicional
+
+Para informações mais detalhadas, consulte a pasta `docs/`:
+
+- **[Guia de Execução](docs/GUIA_EXECUCAO.md)** - Instruções detalhadas de execução
+- **[Fluxo de Execução](docs/FLUXO_EXECUCAO.md)** - Fluxograma e sequência de execução
+- **[Resumo de Execução](docs/README_EXECUCAO.md)** - Resumo dos arquivos e execução
+- **[Testes da API](docs/TESTE_API_RESUMO.md)** - Documentação dos testes
+- **[Testes Unitários](docs/README_TESTES.md)** - Guia de testes unitários
 
 ## Licença
 
@@ -407,10 +445,8 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ## Suporte
 
 Para dúvidas ou suporte:
-- Email: [seu-email@exemplo.com]
-- LinkedIn: [seu-linkedin]
-- GitHub: [seu-github]
+- Email: ezequiel.martins2@icloud.com
+- LinkedIn: https://www.linkedin.com/in/fontesmartins23/
+- GitHub: https://github.com/fontesmartins/
 
 ---
-
-**Decision Recruitment AI** - Transformando recrutamento com Inteligência Artificial 

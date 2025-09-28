@@ -50,15 +50,13 @@ fastapi_app.py monitoring.py optimization_
 
 ```
 fiap-final/
-main.py # Pipeline principal
+main.py # Pipeline de treinamento
 fastapi_app.py # API REST
 mlflow_config.py # Configuração MLflow
 mlflow_experiments.py # Experimentos
-model_pipeline.py # Pipeline avançado
 monitoring.py # Monitoramento
 data_analysis.py # Análise de dados
-app.py # App principal
-deploy.py # Deploy
+deploy_linux.sh # Deploy
 requirements.txt # Dependências
 dataset_preparado.csv # Dataset
 models/ # Modelos salvos
@@ -220,7 +218,7 @@ mlflow ui --backend-store-uri file:./mlruns --port 5001
 
 ## Próximos Passos
 
-1. **Deploy:** Usar `deploy.py` para produção
+1. **Deploy:** Usar `deploy_linux.sh` para produção
 2. **Monitoramento:** Configurar alertas automáticos
 3. **Retreinamento:** Automatizar retreinamento periódico
 4. **A/B Testing:** Implementar testes de modelos

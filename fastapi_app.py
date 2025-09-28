@@ -17,8 +17,6 @@ from datetime import datetime
 import os
 import mlflow
 import mlflow.xgboost
-from model_pipeline import DecisionRecruitmentModel
-from mlflow_config import get_mlflow_config
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -26,498 +24,436 @@ logger = logging.getLogger(__name__)
 
 # Inicializar FastAPI
 app = FastAPI(
-title="Decision Recruitment AI",
-description="API para predição de match candidato-vaga usando XGBoost",
-version="1.0.0",
-docs_url="/docs",
-redoc_url="/redoc"
+    title="Decision Recruitment AI",
+    description="API para predição de match candidato-vaga usando XGBoost",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
 # Carregar modelo globalmente
 model = None
-mlflow_config = None
+label_encoders = None
+scaler = None
+model_metadata = None
 
 # Modelos Pydantic para validação de dados
 class CandidateData(BaseModel):
-"""Modelo para dados do candidato"""
-nome: str = Field(..., description="Nome do candidato")
-nivel_profissional_candidato: str = Field(..., description="Nível profissional do candidato")
-nivel_ingles_candidato: str = Field(..., description="Nível de inglês do candidato")
-nivel_espanhol_candidato: str = Field(..., description="Nível de espanhol do candidato")
-cv_text: str = Field(..., description="Texto do CV")
-pcd: str = Field(default="Não", description="Pessoa com deficiência")
-remuneracao: Optional[float] = Field(default=0, description="Remuneração esperada")
-estado: str = Field(default="São Paulo", description="Estado de residência")
+    """Modelo para dados do candidato"""
+    nome: str = Field(..., description="Nome do candidato")
+    nivel_profissional_candidato: str = Field(..., description="Nível profissional do candidato")
+    nivel_ingles_candidato: str = Field(..., description="Nível de inglês do candidato")
+    nivel_espanhol_candidato: str = Field(..., description="Nível de espanhol do candidato")
+    cv_text: str = Field(..., description="Texto do CV")
+    pcd: str = Field(default="Não", description="Pessoa com deficiência")
+    remuneracao: Optional[float] = Field(default=0, description="Remuneração esperada")
+    estado: str = Field(default="São Paulo", description="Estado de residência")
 
 class JobData(BaseModel):
-"""Modelo para dados da vaga"""
-titulo_vaga: str = Field(..., description="Título da vaga")
-nivel_profissional_vaga: str = Field(..., description="Nível profissional da vaga")
-nivel_ingles_vaga: str = Field(..., description="Nível de inglês da vaga")
-nivel_espanhol_vaga: str = Field(..., description="Nível de espanhol da vaga")
-vaga_sap: str = Field(default="Não", description="É vaga SAP")
-competencia_tecnicas: str = Field(..., description="Competências técnicas da vaga")
-cliente: str = Field(..., description="Cliente solicitante")
-tipo_contratacao: str = Field(..., description="Tipo de contratação")
+    """Modelo para dados da vaga"""
+    titulo_vaga: str = Field(..., description="Título da vaga")
+    nivel_profissional_vaga: str = Field(..., description="Nível profissional da vaga")
+    nivel_ingles_vaga: str = Field(..., description="Nível de inglês da vaga")
+    nivel_espanhol_vaga: str = Field(..., description="Nível de espanhol da vaga")
+    vaga_sap: str = Field(default="Não", description="Vaga SAP")
+    competencia_tecnicas: str = Field(default="", description="Competências técnicas")
+    tipo_contratacao: str = Field(..., description="Tipo de contratação")
 
 class PredictionRequest(BaseModel):
-"""Modelo para requisição de predição"""
-candidate: CandidateData
-job: JobData
+    """Modelo para requisição de predição"""
+    candidate: CandidateData
+    job: JobData
 
 class PredictionResponse(BaseModel):
-"""Modelo para resposta de predição"""
-prediction: int = Field(..., description="Predição (0 ou 1)")
-probability: float = Field(..., description="Probabilidade de contratação")
-confidence: str = Field(..., description="Nível de confiança")
-recommendation: str = Field(..., description="Recomendação")
-explanation: str = Field(..., description="Explicação da predição")
-timestamp: str = Field(..., description="Timestamp da predição")
-status: str = Field(..., description="Status da operação")
+    """Modelo para resposta de predição"""
+    status: str
+    prediction: int
+    probability: float
+    confidence_score: float
+    recommendation: str
+    model_version: str
+    timestamp: str
 
 class BatchPredictionRequest(BaseModel):
-"""Modelo para predição em lote"""
-candidates: List[CandidateData]
-job: JobData
+    """Modelo para predição em lote"""
+    candidates: List[CandidateData]
+    job: JobData
 
 class BatchPredictionResponse(BaseModel):
-"""Modelo para resposta de predição em lote"""
-results: List[Dict[str, Any]]
-total_candidates: int
-recommended_count: int
-timestamp: str
-status: str
-
-class HealthResponse(BaseModel):
-"""Modelo para resposta de health check"""
-status: str
-timestamp: str
-model_loaded: bool
+    """Modelo para resposta de predição em lote"""
+    status: str
+    predictions: List[Dict[str, Any]]
+    model_version: str
+    timestamp: str
 
 def load_model():
-"""Carrega o modelo treinado"""
-global model, mlflow_config
-try:
-# Inicializar MLflow config
-mlflow_config = get_mlflow_config()
+    """Carrega modelo e preprocessadores"""
+    global model, label_encoders, scaler, model_metadata
+    
+    try:
+        # Verificar se os arquivos existem
+        model_path = "models/xgboost_model.pkl"
+        encoders_path = "models/label_encoders.pkl"
+        scaler_path = "models/scaler.pkl"
+        metadata_path = "models/model_metadata.json"
+        
+        if not all(os.path.exists(path) for path in [model_path, encoders_path, scaler_path, metadata_path]):
+            raise FileNotFoundError("Arquivos do modelo não encontrados")
+        
+        # Carregar modelo e preprocessadores
+        model = joblib.load(model_path)
+        label_encoders = joblib.load(encoders_path)
+        scaler = joblib.load(scaler_path)
+        
+        # Carregar metadados
+        with open(metadata_path, 'r') as f:
+            model_metadata = json.load(f)
+        
+        logger.info("Modelo carregado com sucesso!")
+        logger.info(f"Tipo do modelo: {model_metadata.get('model_type', 'Desconhecido')}")
+        logger.info(f"Data de treinamento: {model_metadata.get('training_date', 'Desconhecida')}")
+        logger.info(f"Número de features: {len(model_metadata.get('feature_columns', []))}")
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"Erro ao carregar modelo: {e}")
+        return False
 
-# Tentar carregar do MLflow Model Registry primeiro
-try:
-model = mlflow_config.load_model(
-model_name="decision-recruitment-model",
-stage="Production"
-)
-logger.info("Modelo carregado do MLflow Model Registry!")
-return True
-except Exception as e:
-logger.warning(f"Erro ao carregar do MLflow Registry: {e}")
-logger.info("Tentando carregar modelo local...")
+def prepare_features(candidate_data: CandidateData, job_data: JobData) -> np.ndarray:
+    """Prepara features para predição"""
+    try:
+        # Criar DataFrame com os dados
+        data = {
+            'nivel_profissional_x': [job_data.nivel_profissional_vaga],
+            'nivel_academico_x': ['Superior'],  # Valor padrão
+            'nivel_ingles_x': [job_data.nivel_ingles_vaga],
+            'nivel_espanhol_x': [job_data.nivel_espanhol_vaga],
+            'area_atuacao': ['Tecnologia'],  # Valor padrão
+            'cidade': [candidate_data.estado],
+            'tipo_contratacao': [job_data.tipo_contratacao],
+            'titulo_profissional': [job_data.titulo_vaga],
+            'nivel_profissional_y': [candidate_data.nivel_profissional_candidato],
+            'nivel_academico_y': ['Superior'],  # Valor padrão
+            'nivel_ingles_y': [candidate_data.nivel_ingles_candidato],
+            'nivel_espanhol_y': [candidate_data.nivel_espanhol_candidato],
+            'is_sap_vaga': [1 if job_data.vaga_sap.lower() == 'sim' else 0],
+            'cv_pt': [candidate_data.cv_text],
+            'remuneracao_numeric': [candidate_data.remuneracao or 0],
+            'is_pcd': [1 if candidate_data.pcd.lower() == 'sim' else 0],
+            'has_cv_en': [1 if len(candidate_data.cv_text) > 0 else 0],
+            'dias_entre_requisicao_candidatura': [0]  # Valor padrão
+        }
+        
+        df = pd.DataFrame(data)
+        
+        # Feature engineering básico
+        df = apply_feature_engineering(df)
+        
+        # Codificar features categóricas
+        feature_columns = []
+        
+        # Features numéricas
+        numeric_features = [
+            'is_sap_vaga', 'remuneracao_numeric', 'is_pcd', 'has_cv_en',
+            'dias_entre_requisicao_candidatura', 'nivel_profissional_compatibility',
+            'nivel_ingles_compatibility', 'nivel_espanhol_compatibility',
+            'cv_length', 'cv_has_technical_keywords', 'cv_has_certifications',
+            'nivel_profissional_match', 'nivel_ingles_match', 'nivel_espanhol_match',
+            'is_sp'
+        ]
+        
+        # Filtrar features que existem
+        numeric_features = [f for f in numeric_features if f in df.columns]
+        
+        # Codificar features categóricas (removido cliente e recrutador)
+        for col in ['nivel_profissional_x', 'nivel_academico_x', 
+                   'nivel_ingles_x', 'nivel_espanhol_x', 'area_atuacao', 
+                   'cidade', 'tipo_contratacao', 'titulo_profissional',
+                   'nivel_profissional_y', 'nivel_academico_y', 
+                   'nivel_ingles_y', 'nivel_espanhol_y']:
+            if col in df.columns and col in label_encoders:
+                df[col] = df[col].astype(str).fillna('Unknown')
+                df[f'{col}_encoded'] = label_encoders[col].transform(df[col])
+                feature_columns.append(f'{col}_encoded')
+        
+        # Adicionar features numéricas
+        feature_columns.extend(numeric_features)
+        
+        # Filtrar features válidas
+        valid_features = [f for f in feature_columns if f in df.columns]
+        
+        # Preparar dados finais
+        X = df[valid_features].fillna(0)
+        
+        # Aplicar normalização se necessário
+        continuous_vars = ['remuneracao_numeric', 'cv_length', 'dias_entre_requisicao_candidatura']
+        continuous_vars = [f for f in continuous_vars if f in X.columns]
+        
+        if continuous_vars:
+            X[continuous_vars] = scaler.transform(X[continuous_vars])
+        
+        return X.values
+        
+    except Exception as e:
+        logger.error(f"Erro ao preparar features: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao preparar features: {str(e)}")
 
-# Fallback para modelo local
-model = DecisionRecruitmentModel()
-model.load_model('models/')
-logger.info("Modelo carregado localmente com sucesso!")
-return True
-
-except Exception as e:
-logger.error(f"Erro ao carregar modelo: {str(e)}")
-return False
-
-def preprocess_input(candidate_data: CandidateData, job_data: JobData) -> pd.DataFrame:
-"""Preprocessa dados de entrada para predição"""
-try:
-# Criar DataFrame com dados combinados
-data = {
-'nivel_profissional_candidato': candidate_data.nivel_profissional_candidato,
-'nivel_ingles_candidato': candidate_data.nivel_ingles_candidato,
-'nivel_espanhol_candidato': candidate_data.nivel_espanhol_candidato,
-'cv_text': candidate_data.cv_text,
-'pcd': candidate_data.pcd,
-'remuneracao': candidate_data.remuneracao,
-'estado': candidate_data.estado,
-'nivel_profissional_vaga': job_data.nivel_profissional_vaga,
-'nivel_ingles_vaga': job_data.nivel_ingles_vaga,
-'nivel_espanhol_vaga': job_data.nivel_espanhol_vaga,
-'vaga_sap': job_data.vaga_sap,
-'competencia_tecnicas': job_data.competencia_tecnicas,
-'cliente': job_data.cliente,
-'tipo_contratacao': job_data.tipo_contratacao
-}
-
-df = pd.DataFrame([data])
-
-# Aplicar feature engineering
-df = apply_basic_feature_engineering(df)
-
-# Selecionar apenas features necessárias
-feature_columns = model.feature_columns
-
-# Criar DataFrame com todas as features necessárias, preenchendo com 0 as que não existem
-df_features = pd.DataFrame(index=df.index)
-for col in feature_columns:
-if col in df.columns:
-df_features[col] = df[col].fillna(0)
-else:
-df_features[col] = 0
-
-return df_features
-
-except Exception as e:
-logger.error(f"Erro no preprocessamento: {str(e)}")
-raise e
-
-def apply_basic_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
-"""Aplica feature engineering básico aos dados de entrada"""
-
-# 1. Features de compatibilidade
-nivel_mapping = {
-'Júnior': 1, 'Pleno': 2, 'Sênior': 3, 'Especialista': 4, 'Líder': 5
-}
-
-idioma_mapping = {
-'Nenhum': 0, 'Básico': 1, 'Intermediário': 2, 'Avançado': 3, 'Fluente': 4
-}
-
-# Compatibilidade de nível profissional
-if 'nivel_profissional_vaga' in df.columns and 'nivel_profissional_candidato' in df.columns:
-df['nivel_profissional_vaga_score'] = df['nivel_profissional_vaga'].map(nivel_mapping).fillna(0)
-df['nivel_profissional_candidato_score'] = df['nivel_profissional_candidato'].map(nivel_mapping).fillna(0)
-df['nivel_profissional_compatibility'] = 1 - abs(df['nivel_profissional_vaga_score'] - df['nivel_profissional_candidato_score']) / 4
-
-# Compatibilidade de inglês
-if 'nivel_ingles_vaga' in df.columns and 'nivel_ingles_candidato' in df.columns:
-df['nivel_ingles_vaga_score'] = df['nivel_ingles_vaga'].map(idioma_mapping).fillna(0)
-df['nivel_ingles_candidato_score'] = df['nivel_ingles_candidato'].map(idioma_mapping).fillna(0)
-df['nivel_ingles_compatibility'] = 1 - abs(df['nivel_ingles_vaga_score'] - df['nivel_ingles_candidato_score']) / 4
-
-# Compatibilidade de espanhol
-if 'nivel_espanhol_vaga' in df.columns and 'nivel_espanhol_candidato' in df.columns:
-df['nivel_espanhol_vaga_score'] = df['nivel_espanhol_vaga'].map(idioma_mapping).fillna(0)
-df['nivel_espanhol_candidato_score'] = df['nivel_espanhol_candidato'].map(idioma_mapping).fillna(0)
-df['nivel_espanhol_compatibility'] = 1 - abs(df['nivel_espanhol_vaga_score'] - df['nivel_espanhol_candidato_score']) / 4
-
-# 2. Features de texto
-if 'cv_text' in df.columns:
-df['cv_length'] = df['cv_text'].str.len().fillna(0)
-df['cv_has_technical_keywords'] = df['cv_text'].str.contains(
-'python|java|javascript|sql|aws|azure|docker|kubernetes|react|angular|node', 
-case=False, na=False
-).astype(int)
-df['cv_has_certifications'] = df['cv_text'].str.contains(
-'certificação|certificado|certified|aws|microsoft|google|oracle', 
-case=False, na=False
-).astype(int)
-
-# 3. Features básicas
-if 'vaga_sap' in df.columns:
-df['is_sap_vaga'] = (df['vaga_sap'] == 'Sim').astype(int)
-
-if 'pcd' in df.columns:
-df['is_pcd'] = (df['pcd'] == 'Sim').astype(int)
-
-if 'estado' in df.columns:
-df['is_sp'] = df['estado'].str.contains('São Paulo', na=False).astype(int)
-
-if 'remuneracao' in df.columns:
-df['remuneracao_numeric'] = pd.to_numeric(df['remuneracao'], errors='coerce').fillna(0)
-
-# 4. Features de match
-if 'nivel_profissional_vaga' in df.columns and 'nivel_profissional_candidato' in df.columns:
-df['nivel_profissional_match'] = (df['nivel_profissional_vaga'] == df['nivel_profissional_candidato']).astype(int)
-
-if 'nivel_ingles_vaga' in df.columns and 'nivel_ingles_candidato' in df.columns:
-df['nivel_ingles_match'] = (df['nivel_ingles_vaga'] == df['nivel_ingles_candidato']).astype(int)
-
-if 'nivel_espanhol_vaga' in df.columns and 'nivel_espanhol_candidato' in df.columns:
-df['nivel_espanhol_match'] = (df['nivel_espanhol_vaga'] == df['nivel_espanhol_candidato']).astype(int)
-
-return df
+def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
+    """Aplica feature engineering"""
+    try:
+        # Mapeamentos
+        nivel_mapping = {
+            'Júnior': 1, 'Pleno': 2, 'Sênior': 3, 'Especialista': 4, 'Líder': 5
+        }
+        
+        idioma_mapping = {
+            'Nenhum': 0, 'Básico': 1, 'Intermediário': 2, 'Avançado': 3, 'Fluente': 4
+        }
+        
+        # Compatibilidade de nível profissional
+        df['nivel_profissional_vaga_score'] = df['nivel_profissional_x'].map(nivel_mapping).fillna(0)
+        df['nivel_profissional_candidato_score'] = df['nivel_profissional_y'].map(nivel_mapping).fillna(0)
+        df['nivel_profissional_compatibility'] = 1 - abs(df['nivel_profissional_vaga_score'] - df['nivel_profissional_candidato_score']) / 4
+        
+        # Compatibilidade de inglês
+        df['nivel_ingles_vaga_score'] = df['nivel_ingles_x'].map(idioma_mapping).fillna(0)
+        df['nivel_ingles_candidato_score'] = df['nivel_ingles_y'].map(idioma_mapping).fillna(0)
+        df['nivel_ingles_compatibility'] = 1 - abs(df['nivel_ingles_vaga_score'] - df['nivel_ingles_candidato_score']) / 4
+        
+        # Compatibilidade de espanhol
+        df['nivel_espanhol_vaga_score'] = df['nivel_espanhol_x'].map(idioma_mapping).fillna(0)
+        df['nivel_espanhol_candidato_score'] = df['nivel_espanhol_y'].map(idioma_mapping).fillna(0)
+        df['nivel_espanhol_compatibility'] = 1 - abs(df['nivel_espanhol_vaga_score'] - df['nivel_espanhol_candidato_score']) / 4
+        
+        # Features de texto
+        df['cv_length'] = df['cv_pt'].str.len().fillna(0)
+        df['cv_has_technical_keywords'] = df['cv_pt'].str.contains(
+            'python|java|javascript|sql|aws|azure|docker|kubernetes|react|angular|node', 
+            case=False, na=False
+        ).astype(int)
+        
+        df['cv_has_certifications'] = df['cv_pt'].str.contains(
+            'certificação|certificado|certified|aws|microsoft|google|oracle', 
+            case=False, na=False
+        ).astype(int)
+        
+        # Features básicas
+        df['is_sp'] = df['cidade'].str.contains('São Paulo', na=False).astype(int)
+        
+        # Features de match
+        df['nivel_profissional_match'] = (df['nivel_profissional_x'] == df['nivel_profissional_y']).astype(int)
+        df['nivel_ingles_match'] = (df['nivel_ingles_x'] == df['nivel_ingles_y']).astype(int)
+        df['nivel_espanhol_match'] = (df['nivel_espanhol_x'] == df['nivel_espanhol_y']).astype(int)
+        
+        return df
+        
+    except Exception as e:
+        logger.error(f"Erro no feature engineering: {e}")
+        raise
 
 @app.on_event("startup")
 async def startup_event():
-"""Evento de inicialização da aplicação"""
-logger.info("Iniciando aplicação...")
-if not load_model():
-logger.error("Falha ao carregar modelo. Aplicação não iniciada.")
-raise Exception("Modelo não pôde ser carregado")
+    """Evento de inicialização da API"""
+    logger.info("Iniciando Decision Recruitment AI API...")
+    
+    if not load_model():
+        logger.error("Falha ao carregar modelo. API não pode ser iniciada.")
+        raise RuntimeError("Modelo não pôde ser carregado")
 
-@app.get("/", response_model=Dict[str, str])
-async def root():
-"""Endpoint raiz"""
-return {
-"message": "Decision Recruitment AI API",
-"version": "1.0.0",
-"docs": "/docs"
-}
-
-@app.get("/health", response_model=HealthResponse)
+@app.get("/health", tags=["Health"])
 async def health_check():
-"""Endpoint de health check"""
-return HealthResponse(
-status="healthy",
-timestamp=datetime.now().isoformat(),
-model_loaded=model is not None
-)
+    """Health check da API"""
+    return {
+        "status": "healthy",
+        "model_loaded": model is not None,
+        "timestamp": datetime.now().isoformat(),
+        "model_version": model_metadata.get('training_date', 'unknown') if model_metadata else 'unknown'
+    }
 
-@app.post("/predict", response_model=PredictionResponse)
-async def predict(request: PredictionRequest):
-"""Endpoint principal para predição"""
-try:
-# Verificar se modelo está carregado
-if model is None:
-raise HTTPException(status_code=500, detail="Modelo não carregado")
+@app.post("/predict", response_model=PredictionResponse, tags=["Prediction"])
+async def predict_match(request: PredictionRequest):
+    """Predição de match candidato-vaga"""
+    try:
+        if model is None:
+            raise HTTPException(status_code=500, detail="Modelo não carregado")
+        
+        # Preparar features
+        X = prepare_features(request.candidate, request.job)
+        
+        # Fazer predição
+        prediction = model.predict(X)[0]
+        probability = model.predict_proba(X)[0][1]
+        
+        # Calcular confidence score
+        confidence_score = abs(probability - 0.5) * 2
+        
+        # Determinar recomendação
+        if prediction == 1 and probability > 0.7:
+            recommendation = "Alta recomendação para contratação"
+        elif prediction == 1 and probability > 0.5:
+            recommendation = "Recomendação moderada para contratação"
+        elif prediction == 0 and probability < 0.3:
+            recommendation = "Não recomendado para contratação"
+        else:
+            recommendation = "Avaliação adicional necessária"
+        
+        return PredictionResponse(
+            status="success",
+            prediction=int(prediction),
+            probability=float(probability),
+            confidence_score=float(confidence_score),
+            recommendation=recommendation,
+            model_version=model_metadata.get('training_date', 'unknown') if model_metadata else 'unknown',
+            timestamp=datetime.now().isoformat()
+        )
+        
+    except Exception as e:
+        logger.error(f"Erro na predição: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro na predição: {str(e)}")
 
-logger.info(f"Recebida requisição de predição para candidato: {request.candidate.nome}")
-
-# Preprocessar dados
-processed_data = preprocess_input(request.candidate, request.job)
-
-# Fazer predição
-if hasattr(model, 'model'):
-# Modelo carregado localmente
-prediction = model.model.predict(processed_data)[0]
-probability = model.model.predict_proba(processed_data)[0][1]
-else:
-# Modelo carregado do MLflow
-prediction = model.predict(processed_data)[0]
-probability = model.predict_proba(processed_data)[0][1]
-
-# Determinar confiança
-if probability > 0.8:
-confidence = 'High'
-elif probability > 0.5:
-confidence = 'Medium'
-else:
-confidence = 'Low'
-
-# Determinar recomendação
-if prediction == 1:
-recommendation = 'RECOMENDADO'
-explanation = 'Candidato tem alta compatibilidade com a vaga'
-else:
-recommendation = 'NÃO RECOMENDADO'
-explanation = 'Candidato não atende aos critérios ideais para a vaga'
-
-response = PredictionResponse(
-prediction=int(prediction),
-probability=float(probability),
-confidence=confidence,
-recommendation=recommendation,
-explanation=explanation,
-timestamp=datetime.now().isoformat(),
-status='success'
-)
-
-# Logar predição no MLflow se disponível
-if mlflow_config:
-try:
-with mlflow.start_run(run_name=f"prediction-{datetime.now().strftime('%Y%m%d-%H%M%S')}"):
-mlflow.log_params({
-"candidate_name": request.candidate.nome,
-"job_title": request.job.titulo_vaga,
-"nivel_profissional_candidato": request.candidate.nivel_profissional_candidato,
-"nivel_profissional_vaga": request.job.nivel_profissional_vaga,
-"cliente": request.job.cliente
-})
-
-mlflow.log_metrics({
-"prediction": int(prediction),
-"probability": float(probability),
-"confidence_score": 1.0 if confidence == 'High' else 0.5 if confidence == 'Medium' else 0.0
-})
-
-mlflow.log_text(
-f"Recomendação: {recommendation}\nExplicação: {explanation}",
-"prediction_details.txt"
-)
-
-except Exception as e:
-logger.warning(f"Erro ao logar predição no MLflow: {e}")
-
-logger.info(f"Predição realizada: {response.recommendation} (prob: {response.probability:.3f})")
-
-return response
-
-except Exception as e:
-logger.error(f"Erro na predição: {str(e)}")
-raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/predict_batch", response_model=BatchPredictionResponse)
+@app.post("/predict_batch", response_model=BatchPredictionResponse, tags=["Prediction"])
 async def predict_batch(request: BatchPredictionRequest):
-"""Endpoint para predição em lote"""
-try:
-if model is None:
-raise HTTPException(status_code=500, detail="Modelo não carregado")
+    """Predição em lote de múltiplos candidatos"""
+    try:
+        if model is None:
+            raise HTTPException(status_code=500, detail="Modelo não carregado")
+        
+        predictions = []
+        
+        for i, candidate in enumerate(request.candidates):
+            try:
+                # Preparar features
+                X = prepare_features(candidate, request.job)
+                
+                # Fazer predição
+                prediction = model.predict(X)[0]
+                probability = model.predict_proba(X)[0][1]
+                confidence_score = abs(probability - 0.5) * 2
+                
+                # Determinar recomendação
+                if prediction == 1 and probability > 0.7:
+                    recommendation = "Alta recomendação"
+                elif prediction == 1 and probability > 0.5:
+                    recommendation = "Recomendação moderada"
+                elif prediction == 0 and probability < 0.3:
+                    recommendation = "Não recomendado"
+                else:
+                    recommendation = "Avaliação adicional necessária"
+                
+                predictions.append({
+                    "candidate_name": candidate.nome,
+                    "prediction": int(prediction),
+                    "probability": float(probability),
+                    "confidence_score": float(confidence_score),
+                    "recommendation": recommendation
+                })
+                
+            except Exception as e:
+                logger.error(f"Erro na predição do candidato {i}: {e}")
+                predictions.append({
+                    "candidate_name": candidate.nome,
+                    "prediction": -1,
+                    "probability": 0.0,
+                    "confidence_score": 0.0,
+                    "recommendation": f"Erro: {str(e)}"
+                })
+        
+        return BatchPredictionResponse(
+            status="success",
+            predictions=predictions,
+            model_version=model_metadata.get('training_date', 'unknown') if model_metadata else 'unknown',
+            timestamp=datetime.now().isoformat()
+        )
+        
+    except Exception as e:
+        logger.error(f"Erro na predição em lote: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro na predição em lote: {str(e)}")
 
-candidates = request.candidates
-job = request.job
+@app.get("/model_info", tags=["Model"])
+async def get_model_info():
+    """Informações sobre o modelo"""
+    if model is None or model_metadata is None:
+        raise HTTPException(status_code=500, detail="Modelo não carregado")
+    
+    return {
+        "model_type": model_metadata.get('model_type', 'Desconhecido'),
+        "training_date": model_metadata.get('training_date', 'Desconhecida'),
+        "is_trained": model_metadata.get('is_trained', False),
+        "features_count": len(model_metadata.get('feature_columns', [])),
+        "feature_columns": model_metadata.get('feature_columns', []),
+        "categorical_columns": model_metadata.get('categorical_columns', [])
+    }
 
-if not candidates:
-raise HTTPException(status_code=400, detail="Lista de candidatos vazia")
+@app.get("/feature_importance", tags=["Model"])
+async def get_feature_importance():
+    """Importância das features do modelo"""
+    try:
+        if model is None:
+            raise HTTPException(status_code=500, detail="Modelo não carregado")
+        
+        # Obter importância das features
+        feature_importance = model.feature_importances_
+        feature_names = model_metadata.get('feature_columns', [])
+        
+        # Criar lista de features com importância
+        importance_data = []
+        for i, (name, importance) in enumerate(zip(feature_names, feature_importance)):
+            importance_data.append({
+                "feature": name,
+                "importance": float(importance),
+                "rank": i + 1
+            })
+        
+        # Ordenar por importância
+        importance_data.sort(key=lambda x: x['importance'], reverse=True)
+        
+        return {
+            "feature_importance": importance_data[:20],  # Top 20 features
+            "total_features": len(feature_names)
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter importância das features: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao obter importância das features: {str(e)}")
 
-logger.info(f"Recebida requisição de predição em lote: {len(candidates)} candidatos")
-
-# Processar cada candidato
-results = []
-for i, candidate in enumerate(candidates):
-try:
-# Preprocessar dados
-processed_data = preprocess_input(candidate, job)
-
-# Fazer predição
-prediction = model.model.predict(processed_data)[0]
-probability = model.model.predict_proba(processed_data)[0][1]
-
-# Determinar confiança e recomendação
-confidence = 'High' if probability > 0.8 else 'Medium' if probability > 0.5 else 'Low'
-recommendation = 'RECOMENDADO' if prediction == 1 else 'NÃO RECOMENDADO'
-
-results.append({
-'candidate_index': i,
-'candidate_name': candidate.nome,
-'prediction': int(prediction),
-'probability': float(probability),
-'confidence': confidence,
-'recommendation': recommendation
-})
-
-except Exception as e:
-logger.error(f"Erro ao processar candidato {i}: {str(e)}")
-results.append({
-'candidate_index': i,
-'candidate_name': candidate.nome,
-'error': str(e)
-})
-
-response = BatchPredictionResponse(
-results=results,
-total_candidates=len(candidates),
-recommended_count=sum(1 for r in results if r.get('prediction') == 1),
-timestamp=datetime.now().isoformat(),
-status='success'
-)
-
-logger.info(f"Predição em lote realizada: {len(candidates)} candidatos, {response.recommended_count} recomendados")
-
-return response
-
-except Exception as e:
-logger.error(f"Erro na predição em lote: {str(e)}")
-raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/model_info")
-async def model_info():
-"""Endpoint para informações do modelo"""
-try:
-if model is None:
-raise HTTPException(status_code=500, detail="Modelo não carregado")
-
-# Carregar metadados
-with open('models/model_metadata.json', 'r') as f:
-metadata = json.load(f)
-
-return {
-'model_type': metadata.get('model_type', 'XGBoost'),
-'training_date': metadata.get('training_date'),
-'feature_count': len(model.feature_columns),
-'features': model.feature_columns[:10], # Primeiras 10 features
-'categorical_features': len(model.categorical_columns),
-'is_trained': metadata.get('is_trained', False),
-'timestamp': datetime.now().isoformat(),
-'status': 'success'
-}
-
-except Exception as e:
-logger.error(f"Erro ao obter informações do modelo: {str(e)}")
-raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/feature_importance")
-async def feature_importance():
-"""Endpoint para importância das features"""
-try:
-if model is None:
-raise HTTPException(status_code=500, detail="Modelo não carregado")
-
-# Obter importância das features
-if hasattr(model, 'model'):
-importance = model.model.feature_importances_
-feature_names = model.feature_columns
-else:
-# Modelo do MLflow
-importance = model.feature_importances_
-feature_names = model.feature_names_in_
-
-# Criar lista de features com importância
-feature_importance_list = []
-for name, imp in zip(feature_names, importance):
-feature_importance_list.append({
-'feature': name,
-'importance': float(imp)
-})
-
-# Ordenar por importância
-feature_importance_list.sort(key=lambda x: x['importance'], reverse=True)
-
-return {
-'feature_importance': feature_importance_list[:20], # Top 20
-'timestamp': datetime.now().isoformat(),
-'status': 'success'
-}
-
-except Exception as e:
-logger.error(f"Erro ao obter importância das features: {str(e)}")
-raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/mlflow_info")
-async def mlflow_info():
-"""Endpoint para informações do MLflow"""
-try:
-if mlflow_config is None:
-raise HTTPException(status_code=500, detail="MLflow não configurado")
-
-# Obter informações do experimento
-experiment = mlflow.get_experiment_by_name(mlflow_config.experiment_name)
-
-if experiment is None:
-return {
-'experiment_name': mlflow_config.experiment_name,
-'experiment_id': None,
-'tracking_uri': mlflow_config.tracking_uri,
-'status': 'experiment_not_found'
-}
-
-# Obter runs recentes
-client = mlflow.tracking.MlflowClient()
-runs = client.search_runs(
-experiment_ids=[experiment.experiment_id],
-max_results=5,
-order_by=["start_time DESC"]
-)
-
-recent_runs = []
-for run in runs:
-recent_runs.append({
-'run_id': run.info.run_id,
-'run_name': run.data.tags.get('mlflow.runName', 'Unnamed'),
-'start_time': run.info.start_time,
-'status': run.info.status,
-'metrics': {k: v for k, v in run.data.metrics.items() if k in ['auc_score', 'cv_auc_mean']}
-})
-
-return {
-'experiment_name': experiment.name,
-'experiment_id': experiment.experiment_id,
-'tracking_uri': mlflow_config.tracking_uri,
-'recent_runs': recent_runs,
-'total_runs': len(client.search_runs(experiment_ids=[experiment.experiment_id])),
-'timestamp': datetime.now().isoformat(),
-'status': 'success'
-}
-
-except Exception as e:
-logger.error(f"Erro ao obter informações do MLflow: {str(e)}")
-raise HTTPException(status_code=500, detail=str(e))
+@app.get("/mlflow_info", tags=["MLflow"])
+async def get_mlflow_info():
+    """Informações sobre experimentos MLflow"""
+    try:
+        import mlflow
+        
+        # Tentar conectar ao MLflow
+        mlflow.set_tracking_uri("file:./mlruns")
+        
+        # Obter informações básicas
+        experiments = mlflow.search_experiments()
+        
+        experiment_info = []
+        for exp in experiments:
+            runs = mlflow.search_runs(experiment_ids=[exp.experiment_id])
+            experiment_info.append({
+                "experiment_id": exp.experiment_id,
+                "experiment_name": exp.name,
+                "runs_count": len(runs),
+                "creation_time": exp.creation_time.isoformat() if exp.creation_time else None
+            })
+        
+        return {
+            "mlflow_tracking_uri": "file:./mlruns",
+            "experiments": experiment_info,
+            "status": "connected"
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro ao conectar ao MLflow: {e}")
+        return {
+            "mlflow_tracking_uri": "file:./mlruns",
+            "experiments": [],
+            "status": "error",
+            "error": str(e)
+        }
 
 if __name__ == "__main__":
-import uvicorn
-uvicorn.run(app, host="0.0.0.0", port=8000)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
