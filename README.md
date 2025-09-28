@@ -1,12 +1,12 @@
-# Decision Recruitment AI 🚀
+# Decision Recruitment AI
 
 Sistema de Inteligência Artificial para predição de match candidato-vaga usando XGBoost, desenvolvido para a Decision.
 
-## 📋 Visão Geral
+## Visão Geral
 
 O **Decision Recruitment AI** é uma solução completa de Machine Learning que utiliza algoritmos de classificação para prever a probabilidade de contratação de candidatos, otimizando o processo de recrutamento da Decision.
 
-### 🎯 Objetivos
+### Objetivos
 
 - **Automatizar** o processo de triagem inicial de candidatos
 - **Otimizar** o match entre candidatos e vagas
@@ -14,22 +14,20 @@ O **Decision Recruitment AI** é uma solução completa de Machine Learning que 
 - **Aumentar** a precisão na seleção de candidatos
 - **Fornecer** insights baseados em dados históricos
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Dados JSON    │───▶│  Feature Eng.   │───▶│  Modelo XGBoost │
-│  (Jobs, Props,  │    │   & Preproc.    │    │   Treinamento   │
-│   Applicants)   │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                       │
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Monitoramento │◀───│   API FastAPI   │◀───│   Modelo Salvo  │
-│   & Logs        │    │   /predict      │    │   (Pickle)      │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+
+Dados JSON Feature Eng. Modelo XGBoost 
+(Jobs, Props, & Preproc. Treinamento 
+Applicants) 
+
+Monitoramento API FastAPI Modelo Salvo 
+& Logs /predict (Pickle) 
+
 ```
 
-## 📊 Dados
+## Dados
 
 ### Estrutura dos Dados
 
@@ -43,7 +41,7 @@ O **Decision Recruitment AI** é uma solução completa de Machine Learning que 
 - **Taxa de contratação**: 5,5% (2.984 candidatos contratados)
 - **57 features** extraídas e preparadas
 
-## 🔧 Features do Modelo
+## Features do Modelo
 
 ### Features de Compatibilidade
 - Match de nível profissional
@@ -64,9 +62,7 @@ O **Decision Recruitment AI** é uma solução completa de Machine Learning que 
 - Presença de informações de remuneração
 - Detalhamento das candidaturas
 
-## 🚀 Instalação e Uso
-
-
+## Instalação e Uso
 
 ### 1. Clone o Repositório
 
@@ -99,7 +95,7 @@ python fastapi_app.py
 python deploy.py
 ```
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Base URL
 ```
@@ -119,26 +115,26 @@ POST /predict
 Content-Type: application/json
 
 {
-  "candidate": {
-    "nome": "João Silva",
-    "nivel_profissional_candidato": "Sênior",
-    "nivel_ingles_candidato": "Avançado",
-    "nivel_espanhol_candidato": "Intermediário",
-    "cv_text": "Desenvolvedor Python com 5 anos de experiência...",
-    "pcd": "Não",
-    "remuneracao": 8000.0,
-    "estado": "São Paulo"
-  },
-  "job": {
-    "titulo_vaga": "Desenvolvedor Python Sênior",
-    "nivel_profissional_vaga": "Sênior",
-    "nivel_ingles_vaga": "Avançado",
-    "nivel_espanhol_vaga": "Básico",
-    "vaga_sap": "Não",
-    "competencia_tecnicas": "Python, Django, Flask, AWS, Docker",
-    "cliente": "TechCorp",
-    "tipo_contratacao": "CLT Full"
-  }
+"candidate": {
+"nome": "João Silva",
+"nivel_profissional_candidato": "Sênior",
+"nivel_ingles_candidato": "Avançado",
+"nivel_espanhol_candidato": "Intermediário",
+"cv_text": "Desenvolvedor Python com 5 anos de experiência...",
+"pcd": "Não",
+"remuneracao": 8000.0,
+"estado": "São Paulo"
+},
+"job": {
+"titulo_vaga": "Desenvolvedor Python Sênior",
+"nivel_profissional_vaga": "Sênior",
+"nivel_ingles_vaga": "Avançado",
+"nivel_espanhol_vaga": "Básico",
+"vaga_sap": "Não",
+"competencia_tecnicas": "Python, Django, Flask, AWS, Docker",
+"cliente": "TechCorp",
+"tipo_contratacao": "CLT Full"
+}
 }
 ```
 
@@ -148,8 +144,8 @@ POST /predict_batch
 Content-Type: application/json
 
 {
-  "candidates": [...],
-  "job": {...}
+"candidates": [...],
+"job": {...}
 }
 ```
 
@@ -167,17 +163,17 @@ GET /feature_importance
 
 ```json
 {
-  "prediction": 1,
-  "probability": 0.85,
-  "confidence": "High",
-  "recommendation": "RECOMENDADO",
-  "explanation": "Candidato tem alta compatibilidade com a vaga",
-  "timestamp": "2025-09-12T20:30:00",
-  "status": "success"
+"prediction": 1,
+"probability": 0.85,
+"confidence": "High",
+"recommendation": "RECOMENDADO",
+"explanation": "Candidato tem alta compatibilidade com a vaga",
+"timestamp": "2025-09-12T20:30:00",
+"status": "success"
 }
 ```
 
-## 🧪 Testes
+## Testes
 
 ### Testes da API
 ```bash
@@ -194,7 +190,7 @@ python test_unit.py
 python monitoring.py
 ```
 
-## 📈 Performance do Modelo
+## Performance do Modelo
 
 ### Métricas de Treinamento
 - **AUC Score**: 0.8701
@@ -210,7 +206,7 @@ python monitoring.py
 4. `nivel_ingles_compatibility`
 5. `cv_has_technical_keywords`
 
-## 🐳 Docker
+## Docker
 
 ### Construir Imagem
 ```bash
@@ -232,7 +228,7 @@ docker ps --filter name=decision-recruitment-api
 docker logs decision-recruitment-api
 ```
 
-## 📊 Monitoramento
+## Monitoramento
 
 ### Logs de Predições
 - Localização: `logs/predictions.log`
@@ -249,45 +245,45 @@ docker logs decision-recruitment-api
 - Alertas automáticos
 - Threshold configurável
 
-## 🔍 Documentação da API
+## Documentação da API
 
 Acesse a documentação interativa em:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 fiap-final/
-├── README.md                 # Este arquivo
-├── requirements.txt          # Dependências Python (inclui MLflow)
-├── Dockerfile               # Configuração Docker
-├── .dockerignore            # Arquivos ignorados no Docker
-├── model_pipeline.py        # Pipeline de treinamento (com MLflow)
-├── fastapi_app.py           # API FastAPI (com MLflow logging)
-├── test_api.py              # Testes da API
-├── test_unit.py             # Testes unitários
-├── monitoring.py            # Sistema de monitoramento (com MLflow)
-├── deploy.py                # Script de deploy
-├── data_analysis.py         # Análise inicial dos dados
-├── mlflow_config.py         # Configuração MLflow
-├── mlflow_experiments.py    # Scripts de experimentos MLflow
-├── start_mlflow.py          # Inicializador MLflow UI
-├── models/                  # Modelos treinados
-│   ├── xgboost_model.pkl
-│   ├── label_encoders.pkl
-│   ├── scaler.pkl
-│   └── model_metadata.json
-├── mlruns/                  # MLflow tracking data
-│   ├── 0/                   # Experimento padrão
-│   └── [experiment_id]/     # Experimentos específicos
-├── logs/                    # Logs do sistema
-│   ├── predictions.log
-│   └── metrics.json
-└── dataset_preparado.csv    # Dataset processado
+README.md # Este arquivo
+requirements.txt # Dependências Python (inclui MLflow)
+Dockerfile # Configuração Docker
+.dockerignore # Arquivos ignorados no Docker
+model_pipeline.py # Pipeline de treinamento (com MLflow)
+fastapi_app.py # API FastAPI (com MLflow logging)
+test_api.py # Testes da API
+test_unit.py # Testes unitários
+monitoring.py # Sistema de monitoramento (com MLflow)
+deploy.py # Script de deploy
+data_analysis.py # Análise inicial dos dados
+mlflow_config.py # Configuração MLflow
+mlflow_experiments.py # Scripts de experimentos MLflow
+start_mlflow.py # Inicializador MLflow UI
+models/ # Modelos treinados
+xgboost_model.pkl
+label_encoders.pkl
+scaler.pkl
+model_metadata.json
+mlruns/ # MLflow tracking data
+0/ # Experimento padrão
+[experiment_id]/ # Experimentos específicos
+logs/ # Logs do sistema
+predictions.log
+metrics.json
+dataset_preparado.csv # Dataset processado
 ```
 
-## 🎯 Casos de Uso
+## Casos de Uso
 
 ### 1. Triagem Automática
 - Classificar candidatos automaticamente
@@ -304,11 +300,11 @@ fiap-final/
 - Otimizar descrições de vagas
 - Melhorar processo de seleção
 
-## 🔬 MLflow Integration
+## MLflow Integration
 
 O projeto agora inclui integração completa com MLflow para experimentação, tracking e versionamento de modelos.
 
-### 🚀 Iniciando MLflow
+### Iniciando MLflow
 
 ```bash
 # Iniciar MLflow UI
@@ -319,7 +315,7 @@ mlflow ui --backend-store-uri file:./mlruns
 # Acesse: http://localhost:5000
 ```
 
-### 📊 Funcionalidades MLflow
+### Funcionalidades MLflow
 
 #### 1. **Experiment Tracking**
 - Rastreamento automático de parâmetros e métricas
@@ -351,32 +347,32 @@ python model_pipeline.py
 python monitoring.py
 ```
 
-### 📈 Experimentos Disponíveis
+### Experimentos Disponíveis
 
 1. **Hyperparameter Tuning**: Testa diferentes configurações do XGBoost
 2. **Model Comparison**: Compara XGBoost, Random Forest e Logistic Regression
 3. **Feature Analysis**: Analisa importância das features
 4. **Production Logging**: Registra predições em tempo real
 
-### 🎯 Workflow MLflow
+### Workflow MLflow
 
 ```mermaid
 graph TD
-    A[Dataset] --> B[Feature Engineering]
-    B --> C[MLflow Experiment]
-    C --> D[Model Training]
-    D --> E[Model Registry]
-    E --> F[Production API]
-    F --> G[Prediction Logging]
-    G --> H[Monitoring]
-    H --> I[Model Retraining]
-    I --> C
+A[Dataset] --> B[Feature Engineering]
+B --> C[MLflow Experiment]
+C --> D[Model Training]
+D --> E[Model Registry]
+E --> F[Production API]
+F --> G[Prediction Logging]
+G --> H[Monitoring]
+H --> I[Model Retraining]
+I --> C
 ```
 
-## 🔮 Próximos Passos
+## Próximos Passos
 
 ### Melhorias Planejadas
-- [x] ✅ **MLflow Integration** - Experiment tracking e model registry
+- [x] **MLflow Integration** - Experiment tracking e model registry
 - [ ] Integração com ATS existente
 - [ ] Interface web para usuários
 - [ ] Modelo de recomendação de vagas
@@ -391,7 +387,7 @@ graph TD
 - [ ] MLflow Model Serving
 - [ ] A/B Testing de modelos
 
-## 🤝 Contribuição
+## Contribuição
 
 1. Fork o projeto
 2. Crie uma branch para sua feature
@@ -399,16 +395,16 @@ graph TD
 4. Push para a branch
 5. Abra um Pull Request
 
-## 📄 Licença
+## Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-## 👥 Equipe
+## Equipe
 
 - **Desenvolvedor**: [Seu Nome]
 - **Instituição**: FIAP
 
-## 📞 Suporte
+## Suporte
 
 Para dúvidas ou suporte:
 - Email: [seu-email@exemplo.com]
@@ -417,4 +413,4 @@ Para dúvidas ou suporte:
 
 ---
 
-**Decision Recruitment AI** - Transformando recrutamento com Inteligência Artificial 🤖✨
+**Decision Recruitment AI** - Transformando recrutamento com Inteligência Artificial 

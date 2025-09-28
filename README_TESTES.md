@@ -1,8 +1,8 @@
-# 🧪 Guia de Testes da API Decision Recruitment AI
+# Guia de Testes da API Decision Recruitment AI
 
 Este diretório contém todos os arquivos necessários para testar a API Decision Recruitment AI, tanto localmente quanto na nuvem.
 
-## 📁 Arquivos de Teste
+## Arquivos de Teste
 
 ### Scripts de Teste
 - **`test_api.sh`** - Script bash para testes básicos
@@ -14,7 +14,7 @@ Este diretório contém todos os arquivos necessários para testar a API Decisio
 - **`test_prediction_positive.json`** - Exemplo de candidato analista SAP
 - **`test_batch_prediction.json`** - Exemplo de predição em lote
 
-## 🚀 Como Executar os Testes
+## Como Executar os Testes
 
 ### 1. Testes Básicos (Bash)
 
@@ -47,16 +47,16 @@ curl -X GET "https://sua-api.herokuapp.com/model_info"
 
 # Predição individual
 curl -X POST "https://sua-api.herokuapp.com/predict" \
-  -H "Content-Type: application/json" \
-  -d @test_prediction.json
+-H "Content-Type: application/json" \
+-d @test_prediction.json
 
 # Predição em lote
 curl -X POST "https://sua-api.herokuapp.com/predict_batch" \
-  -H "Content-Type: application/json" \
-  -d @test_batch_prediction.json
+-H "Content-Type: application/json" \
+-d @test_batch_prediction.json
 ```
 
-## 📊 Endpoints Disponíveis
+## Endpoints Disponíveis
 
 | Endpoint | Método | Descrição |
 |----------|--------|-----------|
@@ -70,51 +70,51 @@ curl -X POST "https://sua-api.herokuapp.com/predict_batch" \
 | `/docs` | GET | Documentação Swagger UI |
 | `/redoc` | GET | Documentação ReDoc |
 
-## 🔍 Estrutura dos Dados
+## Estrutura dos Dados
 
 ### Candidato
 ```json
 {
-  "nome": "string",
-  "nivel_profissional_candidato": "Júnior|Pleno|Sênior|Especialista|Líder",
-  "nivel_ingles_candidato": "Nenhum|Básico|Intermediário|Avançado|Fluente",
-  "nivel_espanhol_candidato": "Nenhum|Básico|Intermediário|Avançado|Fluente",
-  "cv_text": "string",
-  "pcd": "Sim|Não",
-  "remuneracao": number,
-  "estado": "string"
+"nome": "string",
+"nivel_profissional_candidato": "Júnior|Pleno|Sênior|Especialista|Líder",
+"nivel_ingles_candidato": "Nenhum|Básico|Intermediário|Avançado|Fluente",
+"nivel_espanhol_candidato": "Nenhum|Básico|Intermediário|Avançado|Fluente",
+"cv_text": "string",
+"pcd": "Sim|Não",
+"remuneracao": number,
+"estado": "string"
 }
 ```
 
 ### Vaga
 ```json
 {
-  "titulo_vaga": "string",
-  "nivel_profissional_vaga": "Júnior|Pleno|Sênior|Especialista|Líder",
-  "nivel_ingles_vaga": "Nenhum|Básico|Intermediário|Avançado|Fluente",
-  "nivel_espanhol_vaga": "Nenhum|Básico|Intermediário|Avançado|Fluente",
-  "vaga_sap": "Sim|Não",
-  "competencia_tecnicas": "string",
-  "cliente": "string",
-  "tipo_contratacao": "string"
+"titulo_vaga": "string",
+"nivel_profissional_vaga": "Júnior|Pleno|Sênior|Especialista|Líder",
+"nivel_ingles_vaga": "Nenhum|Básico|Intermediário|Avançado|Fluente",
+"nivel_espanhol_vaga": "Nenhum|Básico|Intermediário|Avançado|Fluente",
+"vaga_sap": "Sim|Não",
+"competencia_tecnicas": "string",
+"cliente": "string",
+"tipo_contratacao": "string"
 }
 ```
 
-## 📈 Resposta da Predição
+## Resposta da Predição
 
 ```json
 {
-  "prediction": 0|1,
-  "probability": 0.0-1.0,
-  "confidence": "Low|Medium|High",
-  "recommendation": "RECOMENDADO|NÃO RECOMENDADO",
-  "explanation": "string",
-  "timestamp": "ISO datetime",
-  "status": "success"
+"prediction": 0|1,
+"probability": 0.0-1.0,
+"confidence": "Low|Medium|High",
+"recommendation": "RECOMENDADO|NÃO RECOMENDADO",
+"explanation": "string",
+"timestamp": "ISO datetime",
+"status": "success"
 }
 ```
 
-## 🎯 Exemplos de Uso
+## Exemplos de Uso
 
 ### 1. Desenvolvedor Python Sênior
 - **Nível:** Sênior
@@ -128,7 +128,7 @@ curl -X POST "https://sua-api.herokuapp.com/predict_batch" \
 - **CV:** Experiência em SAP, SQL, Oracle, Excel
 - **Resultado esperado:** Depende da compatibilidade com a vaga
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Erro de Conexão
 - Verifique se a API está rodando
@@ -143,14 +143,14 @@ curl -X POST "https://sua-api.herokuapp.com/predict_batch" \
 - Verifique se os dados estão no formato correto
 - Confirme se todos os campos obrigatórios estão preenchidos
 
-## 📝 Logs e Monitoramento
+## Logs e Monitoramento
 
 A API registra todas as predições no MLflow para monitoramento:
 - Acesse `/mlflow_info` para ver informações do experimento
 - Use `/docs` para interface interativa de testes
 - Logs detalhados são exibidos no console da API
 
-## 🚀 Deploy na Nuvem
+## Deploy na Nuvem
 
 Para testar na nuvem:
 1. Faça deploy da API (Heroku, AWS, etc.)
@@ -158,7 +158,7 @@ Para testar na nuvem:
 3. Execute os testes usando os scripts fornecidos
 4. Monitore os logs para verificar o funcionamento
 
-## 📞 Suporte
+## Suporte
 
 Se encontrar problemas:
 1. Verifique os logs da API

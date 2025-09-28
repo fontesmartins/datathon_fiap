@@ -1,10 +1,10 @@
-# 🚀 Guia de Execução - Decision Recruitment AI
+# Guia de Execução - Decision Recruitment AI
 
-## 📋 Visão Geral
+## Visão Geral
 
 Este documento explica a ordem de execução e funcionamento de cada módulo do sistema Decision Recruitment AI, um sistema de match candidato-vaga usando Machine Learning com XGBoost e MLflow.
 
-## 🎯 Ordem de Execução
+## Ordem de Execução
 
 ### 1. **main.py** - Pipeline Principal
 **Arquivo principal que executa todo o fluxo de treinamento**
@@ -337,7 +337,7 @@ Este documento explica a ordem de execução e funcionamento de cada módulo do 
 
 ---
 
-## 🔄 Fluxo de Execução Completo
+## Fluxo de Execução Completo
 
 ### 1. **Preparação**
 ```bash
@@ -399,7 +399,7 @@ mlflow ui --backend-store-uri file:./mlruns
 
 ---
 
-## 📊 Resultados Esperados
+## Resultados Esperados
 
 ### Métricas de Performance
 - **AUC Score**: ~83% (após otimização)
@@ -425,7 +425,7 @@ mlflow ui --backend-store-uri file:./mlruns
 
 ---
 
-## 🎯 Próximos Passos
+## Próximos Passos
 
 1. **Deploy**: Usar `deploy.py` para deploy em produção
 2. **Monitoramento**: Configurar alertas de drift
@@ -435,7 +435,7 @@ mlflow ui --backend-store-uri file:./mlruns
 
 ---
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Problemas Comuns
 
@@ -462,7 +462,7 @@ mlflow ui --backend-store-uri file:./mlruns --port 5001
 
 ---
 
-## 📚 Referências
+## Referências
 
 - [MLflow Documentation](https://mlflow.org/docs/)
 - [XGBoost Documentation](https://xgboost.readthedocs.io/)
