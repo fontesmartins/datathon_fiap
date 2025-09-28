@@ -1,0 +1,22 @@
+{
+  "candidate": {
+    "nome": "João Silva",
+    "nivel_profissional_candidato": "Sênior",
+    "nivel_ingles_candidato": "Avançado",
+    "nivel_espanhol_candidato": "Intermediário",
+    "cv_text": "Desenvolvedor Python com 5 anos de experiência em desenvolvimento web, APIs REST, Django, Flask, PostgreSQL, AWS, Docker, Kubernetes. Certificado AWS Solutions Architect. Experiência em liderança de equipes e metodologias ágeis.",
+    "pcd": "Não",
+    "remuneracao": 12000,
+    "estado": "São Paulo"
+  },
+  "job": {
+    "titulo_vaga": "Desenvolvedor Python Sênior",
+    "nivel_profissional_vaga": "Sênior",
+    "nivel_ingles_vaga": "Avançado",
+    "nivel_espanhol_vaga": "Intermediário",
+    "vaga_sap": "Não",
+    "competencia_tecnicas": "Python, Django, Flask, PostgreSQL, AWS, Docker, Kubernetes, APIs REST",
+    "cliente": "TechCorp",
+    "tipo_contratacao": "CLT Full"
+  }
+}

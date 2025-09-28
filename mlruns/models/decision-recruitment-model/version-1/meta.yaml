@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1757860765025
+current_stage: None
+description: null
+last_updated_timestamp: 1757860765025
+name: decision-recruitment-model
+run_id: 3aec87a2bc6148b799416d2babf39d0d
+run_link: null
+source: file:///Users/kielmartins/Desktop/code/dev/fiap-final/mlruns/657991508888220837/3aec87a2bc6148b799416d2babf39d0d/artifacts/xgboost_model
+status: READY
+status_message: null
+storage_location: file:///Users/kielmartins/Desktop/code/dev/fiap-final/mlruns/657991508888220837/3aec87a2bc6148b799416d2babf39d0d/artifacts/xgboost_model
+user_id: null
+version: 1

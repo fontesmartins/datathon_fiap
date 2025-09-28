@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/kielmartins/Desktop/code/dev/fiap-final/mlruns/657991508888220837/4c1a246df9f04c888876c4be09322619/artifacts
+end_time: 1759026824986
+entry_point_name: ''
+experiment_id: '657991508888220837'
+lifecycle_stage: active
+run_id: 4c1a246df9f04c888876c4be09322619
+run_name: prediction-20250927-233344
+run_uuid: 4c1a246df9f04c888876c4be09322619
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1759026824977
+status: 3
+tags: []
+user_id: kielmartins

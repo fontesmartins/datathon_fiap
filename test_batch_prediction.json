@@ -1,0 +1,34 @@
+{
+  "candidates": [
+    {
+      "nome": "Ana Costa",
+      "nivel_profissional_candidato": "Júnior",
+      "nivel_ingles_candidato": "Básico",
+      "nivel_espanhol_candidato": "Nenhum",
+      "cv_text": "Desenvolvedora iniciante com conhecimento em Python, HTML, CSS, JavaScript. Formação em Ciência da Computação.",
+      "pcd": "Não",
+      "remuneracao": 3000,
+      "estado": "São Paulo"
+    },
+    {
+      "nome": "Carlos Oliveira",
+      "nivel_profissional_candidato": "Sênior",
+      "nivel_ingles_candidato": "Fluente",
+      "nivel_espanhol_candidato": "Avançado",
+      "cv_text": "Arquiteto de Software com 8 anos de experiência em Java, Spring Boot, Microservices, AWS, Docker, Kubernetes. Liderança de equipes e arquitetura de sistemas distribuídos.",
+      "pcd": "Não",
+      "remuneracao": 15000,
+      "estado": "São Paulo"
+    }
+  ],
+  "job": {
+    "titulo_vaga": "Desenvolvedor Java Sênior",
+    "nivel_profissional_vaga": "Sênior",
+    "nivel_ingles_vaga": "Fluente",
+    "nivel_espanhol_vaga": "Avançado",
+    "vaga_sap": "Não",
+    "competencia_tecnicas": "Java, Spring Boot, Microservices, AWS, Docker, Kubernetes",
+    "cliente": "TechCorp",
+    "tipo_contratacao": "CLT Full"
+  }
+}

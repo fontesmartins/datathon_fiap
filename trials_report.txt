@@ -1,0 +1,23 @@
+🎯 RELATÓRIO DE TRIALS DE OTIMIZAÇÃO
+==================================================
+
+Total de Trials: N/A
+Tempo Total: N/A
+Melhor Score: 0.833021
+Melhor Trial: N/A
+
+MELHORES PARÂMETROS:
+  max_depth: 10
+  learning_rate: 0.225851
+  n_estimators: 993
+  subsample: 0.769540
+  colsample_bytree: 0.761807
+  reg_alpha: 3.165666
+  reg_lambda: 3.655288
+  min_child_weight: 2
+  gamma: 0.449914
+  objective: binary:logistic
+  eval_metric: auc
+  random_state: 42
+  n_jobs: -1
+

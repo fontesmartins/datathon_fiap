@@ -1,0 +1,22 @@
+{
+  "candidate": {
+    "nome": "Maria Santos",
+    "nivel_profissional_candidato": "Pleno",
+    "nivel_ingles_candidato": "Fluente",
+    "nivel_espanhol_candidato": "Fluente",
+    "cv_text": "Analista de Sistemas com experiência em SAP, SQL Server, Oracle, desenvolvimento de relatórios, análise de dados, Excel avançado, VBA, Power BI. Certificações Microsoft e Oracle. Experiência em projetos de implementação SAP.",
+    "pcd": "Não",
+    "remuneracao": 8000,
+    "estado": "São Paulo"
+  },
+  "job": {
+    "titulo_vaga": "Analista SAP Pleno",
+    "nivel_profissional_vaga": "Pleno",
+    "nivel_ingles_vaga": "Fluente",
+    "nivel_espanhol_vaga": "Fluente",
+    "vaga_sap": "Sim",
+    "competencia_tecnicas": "SAP, SQL, Oracle, Excel, VBA, Power BI, Análise de Dados",
+    "cliente": "Morris, Moran and Dodson",
+    "tipo_contratacao": "CLT Full"
+  }
+}
