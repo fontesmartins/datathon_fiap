@@ -28,7 +28,6 @@
     "nivel_espanhol_vaga": "Avançado",
     "vaga_sap": "Não",
     "competencia_tecnicas": "Java, Spring Boot, Microservices, AWS, Docker, Kubernetes",
-    "cliente": "TechCorp",
-    "tipo_contratacao": "CLT Full"
+    "tipo_contratacao": "CLT"
   }
 }

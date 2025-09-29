@@ -16,7 +16,6 @@
     "nivel_espanhol_vaga": "Intermediário",
     "vaga_sap": "Não",
     "competencia_tecnicas": "Python, Django, Flask, PostgreSQL, AWS, Docker, Kubernetes, APIs REST",
-    "cliente": "TechCorp",
-    "tipo_contratacao": "CLT Full"
+    "tipo_contratacao": "CLT"
   }
 }

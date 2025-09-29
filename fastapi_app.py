@@ -126,7 +126,7 @@ def prepare_features(candidate_data: CandidateData, job_data: JobData) -> np.nda
         # Criar DataFrame com os dados
         data = {
             'nivel_profissional_x': [job_data.nivel_profissional_vaga],
-            'nivel_academico_x': ['Superior'],  # Valor padrão
+            'nivel_academico_x': ['Ensino Superior Completo'],  # Valor padrão
             'nivel_ingles_x': [job_data.nivel_ingles_vaga],
             'nivel_espanhol_x': [job_data.nivel_espanhol_vaga],
             'area_atuacao': ['Tecnologia'],  # Valor padrão
@@ -134,7 +134,7 @@ def prepare_features(candidate_data: CandidateData, job_data: JobData) -> np.nda
             'tipo_contratacao': [job_data.tipo_contratacao],
             'titulo_profissional': [job_data.titulo_vaga],
             'nivel_profissional_y': [candidate_data.nivel_profissional_candidato],
-            'nivel_academico_y': ['Superior'],  # Valor padrão
+            'nivel_academico_y': ['Ensino Superior Completo'],  # Valor padrão
             'nivel_ingles_y': [candidate_data.nivel_ingles_candidato],
             'nivel_espanhol_y': [candidate_data.nivel_espanhol_candidato],
             'is_sap_vaga': [1 if job_data.vaga_sap.lower() == 'sim' else 0],
