@@ -10,12 +10,12 @@
     "estado": "São Paulo"
   },
   "job": {
-    "titulo_vaga": "Analista SAP Pleno",
+    "titulo_vaga": "Analista Desenvolvedor",
     "nivel_profissional_vaga": "Pleno",
     "nivel_ingles_vaga": "Fluente",
     "nivel_espanhol_vaga": "Fluente",
     "vaga_sap": "Sim",
     "competencia_tecnicas": "SAP, SQL, Oracle, Excel, VBA, Power BI, Análise de Dados",
-    "tipo_contratacao": "CLT"
+    "tipo_contratacao": "CLT Full"
   }
 }

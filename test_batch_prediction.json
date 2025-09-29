@@ -22,12 +22,12 @@
     }
   ],
   "job": {
-    "titulo_vaga": "Desenvolvedor Java Sênior",
+    "titulo_vaga": "Analista Desenvolvedor",
     "nivel_profissional_vaga": "Sênior",
     "nivel_ingles_vaga": "Fluente",
     "nivel_espanhol_vaga": "Avançado",
     "vaga_sap": "Não",
     "competencia_tecnicas": "Java, Spring Boot, Microservices, AWS, Docker, Kubernetes",
-    "tipo_contratacao": "CLT"
+    "tipo_contratacao": "CLT Full"
   }
 }

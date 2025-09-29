@@ -239,6 +239,8 @@ def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
         ).astype(int)
         
         # Features básicas
+        df['is_sap_vaga'] = (df['is_sap_vaga'] == 1).astype(int)
+        df['is_pcd'] = (df['is_pcd'] == 1).astype(int)
         df['is_sp'] = df['cidade'].str.contains('São Paulo', na=False).astype(int)
         
         # Features de match
