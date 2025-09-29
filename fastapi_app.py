@@ -186,12 +186,13 @@ def prepare_features(candidate_data: CandidateData, job_data: JobData) -> np.nda
         # Preparar dados finais
         X = df[valid_features].fillna(0)
         
-        # Aplicar normalização se necessário
-        continuous_vars = ['remuneracao_numeric', 'cv_length', 'dias_entre_requisicao_candidatura']
-        continuous_vars = [f for f in continuous_vars if f in X.columns]
+        # Aplicar normalização se necessário (apenas features treinadas no scaler)
+        scaler_features = ['remuneracao_numeric', 'nivel_profissional_compatibility', 
+                          'nivel_ingles_compatibility', 'nivel_espanhol_compatibility']
+        scaler_features = [f for f in scaler_features if f in X.columns]
         
-        if continuous_vars:
-            X[continuous_vars] = scaler.transform(X[continuous_vars])
+        if scaler_features:
+            X[scaler_features] = scaler.transform(X[scaler_features])
         
         return X.values
         
@@ -245,6 +246,7 @@ def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
         
         # Features de match
         df['nivel_profissional_match'] = (df['nivel_profissional_x'] == df['nivel_profissional_y']).astype(int)
+        df['nivel_academico_match'] = (df['nivel_academico_x'] == df['nivel_academico_y']).astype(int)
         df['nivel_ingles_match'] = (df['nivel_ingles_x'] == df['nivel_ingles_y']).astype(int)
         df['nivel_espanhol_match'] = (df['nivel_espanhol_x'] == df['nivel_espanhol_y']).astype(int)
         
