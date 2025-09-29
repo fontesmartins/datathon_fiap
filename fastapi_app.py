@@ -159,7 +159,7 @@ def prepare_features(candidate_data: CandidateData, job_data: JobData) -> np.nda
             'dias_entre_requisicao_candidatura', 'nivel_profissional_compatibility',
             'nivel_ingles_compatibility', 'nivel_espanhol_compatibility',
             'cv_length', 'cv_has_technical_keywords', 'cv_has_certifications',
-            'nivel_profissional_match', 'nivel_ingles_match', 'nivel_espanhol_match',
+            'nivel_profissional_match', 'nivel_academico_match', 'nivel_ingles_match', 'nivel_espanhol_match',
             'is_sp'
         ]
         
