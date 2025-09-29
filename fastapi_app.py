@@ -470,6 +470,50 @@ async def debug_info():
     except Exception as e:
         return {"error": str(e)}
 
+@app.post("/debug_features", tags=["Debug"])
+async def debug_features():
+    """Testa a geração de features"""
+    try:
+        from fastapi_app import CandidateData, JobData
+        
+        # Dados de teste
+        candidate_data = CandidateData(
+            nome="Teste",
+            nivel_profissional_candidato="Sênior",
+            nivel_ingles_candidato="Avançado",
+            nivel_espanhol_candidato="Intermediário",
+            cv_text="Python developer",
+            pcd="Não",
+            remuneracao=8000,
+            estado="São Paulo"
+        )
+        
+        job_data = JobData(
+            titulo_vaga="Analista Desenvolvedor",
+            nivel_profissional_vaga="Sênior",
+            nivel_ingles_vaga="Avançado",
+            nivel_espanhol_vaga="Intermediário",
+            vaga_sap="Não",
+            competencia_tecnicas="Python",
+            tipo_contratacao="CLT Full"
+        )
+        
+        # Testar prepare_features
+        X = prepare_features(candidate_data, job_data)
+        
+        return {
+            "features_shape": X.shape,
+            "features_columns": list(X.columns) if hasattr(X, 'columns') else "No columns",
+            "compatibility_features": [
+                "nivel_profissional_compatibility" in (X.columns if hasattr(X, 'columns') else []),
+                "nivel_ingles_compatibility" in (X.columns if hasattr(X, 'columns') else []),
+                "nivel_espanhol_compatibility" in (X.columns if hasattr(X, 'columns') else [])
+            ]
+        }
+        
+    except Exception as e:
+        return {"error": str(e), "traceback": str(e.__traceback__)}
+
 @app.get("/mlflow_info", tags=["MLflow"])
 async def get_mlflow_info():
     """Informações sobre experimentos MLflow"""
