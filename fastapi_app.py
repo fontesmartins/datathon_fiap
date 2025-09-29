@@ -441,6 +441,33 @@ async def get_feature_importance():
         logger.error(f"Erro ao obter importância das features: {e}")
         raise HTTPException(status_code=500, detail=f"Erro ao obter importância das features: {str(e)}")
 
+@app.get("/debug", tags=["Debug"])
+async def debug_info():
+    """Informações de debug para troubleshooting"""
+    try:
+        import os
+        
+        debug_info = {
+            "model_loaded": model is not None,
+            "label_encoders_loaded": label_encoders is not None,
+            "scaler_loaded": scaler is not None,
+            "model_metadata_loaded": model_metadata is not None,
+            "working_directory": os.getcwd(),
+            "files_in_models_dir": [],
+            "files_in_root": []
+        }
+        
+        # Verificar arquivos
+        if os.path.exists('models/'):
+            debug_info["files_in_models_dir"] = os.listdir('models/')
+        
+        debug_info["files_in_root"] = [f for f in os.listdir('.') if f.endswith(('.pkl', '.json', '.csv'))]
+        
+        return debug_info
+        
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/mlflow_info", tags=["MLflow"])
 async def get_mlflow_info():
     """Informações sobre experimentos MLflow"""
