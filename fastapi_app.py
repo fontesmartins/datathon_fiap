@@ -264,12 +264,36 @@ async def startup_event():
 @app.get("/health", tags=["Health"])
 async def health_check():
     """Health check da API"""
-    return {
-        "status": "healthy",
-        "model_loaded": model is not None,
-        "timestamp": datetime.now().isoformat(),
-        "model_version": model_metadata.get('training_date', 'unknown') if model_metadata else 'unknown'
-    }
+    try:
+        # Verificar se todos os componentes estão carregados
+        components_status = {
+            "model": model is not None,
+            "label_encoders": label_encoders is not None,
+            "scaler": scaler is not None,
+            "model_metadata": model_metadata is not None
+        }
+        
+        all_loaded = all(components_status.values())
+        
+        if not all_loaded:
+            logger.warning(f"Componentes não carregados: {components_status}")
+            raise HTTPException(
+                status_code=503, 
+                detail=f"Service unavailable - Components not loaded: {components_status}"
+            )
+        
+        return {
+            "status": "healthy",
+            "model_loaded": True,
+            "timestamp": datetime.now().isoformat(),
+            "model_version": model_metadata.get('training_date', 'unknown') if model_metadata else 'unknown',
+            "components": components_status
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro no health check: {e}")
+        raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
 
 @app.post("/predict", response_model=PredictionResponse, tags=["Prediction"])
 async def predict_match(request: PredictionRequest):

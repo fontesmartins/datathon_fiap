@@ -7,8 +7,11 @@
 # Garantir que o modelo está treinado
 python main.py
 
+# Verificar se todos os arquivos estão presentes
+python check_models.py
+
 # Testar localmente
-python fastapi_app.py
+python start.py
 ```
 
 ### 2. Deploy no Railway
@@ -51,9 +54,11 @@ curl https://seu-projeto.railway.app/model_info
 ✅ `requirements.txt` - Dependências Python  
 ✅ `railway.json` - Configurações Railway
 ✅ `Procfile` - Comando de start
+✅ `start.py` - Script de inicialização robusto
 ✅ `fastapi_app.py` - API principal
 ✅ `models/` - Modelos treinados
 ✅ `dataset_preparado.csv` - Dataset
+✅ `check_models.py` - Verificador de modelos
 
 ## Limitações Railway
 
