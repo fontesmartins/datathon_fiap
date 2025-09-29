@@ -129,7 +129,7 @@ def prepare_features(candidate_data: CandidateData, job_data: JobData) -> np.nda
             'nivel_academico_x': ['Ensino Superior Completo'],  # Valor padrão
             'nivel_ingles_x': [job_data.nivel_ingles_vaga],
             'nivel_espanhol_x': [job_data.nivel_espanhol_vaga],
-            'area_atuacao': ['Tecnologia'],  # Valor padrão
+            'area_atuacao': ['TI - Desenvolvimento/Programação'],  # Valor padrão
             'cidade': [candidate_data.estado],
             'tipo_contratacao': [job_data.tipo_contratacao],
             'titulo_profissional': [job_data.titulo_vaga],
