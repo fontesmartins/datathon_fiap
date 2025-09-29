@@ -1,20 +1,20 @@
 {
   "best_params": {
-    "max_depth": 6,
-    "learning_rate": 0.027726165142171664,
-    "n_estimators": 655,
-    "subsample": 0.6357388735015217,
-    "colsample_bytree": 0.790422408605535,
-    "reg_alpha": 2.7352021603456818,
-    "reg_lambda": 2.1557129708835734,
-    "min_child_weight": 1,
-    "gamma": 0.3959203295992856,
+    "max_depth": 9,
+    "learning_rate": 0.12970029358945717,
+    "n_estimators": 567,
+    "subsample": 0.8166874284524424,
+    "colsample_bytree": 0.7175315836101716,
+    "reg_alpha": 0.01721833300173503,
+    "reg_lambda": 2.461783317377252,
+    "min_child_weight": 4,
+    "gamma": 2.421270049071687,
     "objective": "binary:logistic",
     "eval_metric": "auc",
     "random_state": 42,
     "n_jobs": -1
   },
-  "best_score": 0.79462502072153,
+  "best_score": 0.7946142166601925,
   "n_trials": 30,
-  "optimization_date": "2025-09-28T18:05:12.830054"
+  "optimization_date": "2025-09-28T20:00:07.572827"
 }

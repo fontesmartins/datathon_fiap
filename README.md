@@ -178,18 +178,13 @@ GET /feature_importance
 
 ### Testes da API
 ```bash
-python test_api.py
+# Teste avançado da API
+python test_api_advanced.py
+
+# Teste simples via script
+./test_api.sh
 ```
 
-### Testes Unitários
-```bash
-python test_unit.py
-```
-
-### Monitoramento
-```bash
-# python monitoring.py (arquivo removido)
-```
 
 ## Performance do Modelo
 
@@ -269,14 +264,14 @@ Dockerfile # Configuração Docker
 .dockerignore # Arquivos ignorados no Docker
 main.py # Pipeline de treinamento (com MLflow)
 fastapi_app.py # API FastAPI (com MLflow logging)
-test_api.py # Testes da API
-test_unit.py # Testes unitários
+test_api_advanced.py # Testes avançados da API
+test_api.sh # Script de teste simples
 # monitoring.py removido (não funcional)
 deploy_linux.sh # Script de deploy para Linux
 data_analysis.py # Análise inicial dos dados
 mlflow_config.py # Configuração MLflow
 # mlflow_experiments.py removido (obsoleto)
-start_mlflow.py # Inicializador MLflow UI
+validate_docker_linux.py # Validador Docker para Linux
 models/ # Modelos treinados
 xgboost_model.pkl
 label_encoders.pkl
@@ -423,15 +418,11 @@ curl -X POST "http://localhost:8000/predict" \
 ./deploy_linux.sh
 ```
 
-## Documentação Adicional
+## Documentação Completa
 
-Para informações mais detalhadas, consulte a pasta `docs/`:
+Para informações detalhadas sobre arquitetura, uso da API, MLflow, troubleshooting e mais:
 
-- **[Guia de Execução](docs/GUIA_EXECUCAO.md)** - Instruções detalhadas de execução
-- **[Fluxo de Execução](docs/FLUXO_EXECUCAO.md)** - Fluxograma e sequência de execução
-- **[Resumo de Execução](docs/README_EXECUCAO.md)** - Resumo dos arquivos e execução
-- **[Testes da API](docs/TESTE_API_RESUMO.md)** - Documentação dos testes
-- **[Testes Unitários](docs/README_TESTES.md)** - Guia de testes unitários
+**[📚 Documentação Completa](DOCUMENTACAO.md)**
 
 ## Licença
 
