@@ -40,7 +40,7 @@ Monitoramento API FastAPI Modelo Salvo
 - **53.759 registros** de candidatos-vagas
 - **Taxa de contratação**: 5,55% (2.984 candidatos contratados de 50.775 total)
 - **57 features** extraídas e preparadas
-- **30 features finais** após feature engineering
+- **28 features finais** após feature engineering e otimização
 
 ## Features do Modelo
 
@@ -229,6 +229,26 @@ docker ps --filter name=decision-recruitment-api
 ### Ver Logs
 ```bash
 docker logs decision-recruitment-api
+```
+
+## Status da API
+
+### ✅ API Online e Funcionando
+- **Railway**: https://decision-recruitment.up.railway.app/
+- **Status**: ✅ Funcionando perfeitamente
+- **Features**: ✅ 28 features corretas
+- **Predições**: ✅ Funcionando (individual e lote)
+- **Última atualização**: 29/09/2025
+
+### Teste Rápido
+```bash
+# Testar API
+curl -X POST https://decision-recruitment.up.railway.app/predict \
+  -H "Content-Type: application/json" \
+  -d @test_prediction.json
+
+# Verificar saúde
+curl https://decision-recruitment.up.railway.app/health
 ```
 
 ## Monitoramento

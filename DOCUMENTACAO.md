@@ -104,6 +104,26 @@ python test_api_advanced.py
 - Verificação de saúde
 - Exposição da porta 8000
 
+### 6. Deploy no Railway (Produção)
+
+A API está atualmente deployada e funcionando no Railway:
+
+**URL de Produção:**
+- https://decision-recruitment.up.railway.app/
+
+**Status Atual:**
+- ✅ **API Online**: Funcionando perfeitamente
+- ✅ **Features**: 28 features corretas
+- ✅ **Predições**: Individual e lote funcionando
+- ✅ **Health Check**: Endpoint `/health` funcionando
+
+**Configuração:**
+- **Plataforma**: Railway
+- **Runtime**: Python 3.11
+- **Porta**: Dinâmica (Railway)
+- **Health Check**: `/health`
+- **Timeout**: 300 segundos
+
 ## Performance do Modelo
 
 ### Métricas Atuais (Último Treinamento)
