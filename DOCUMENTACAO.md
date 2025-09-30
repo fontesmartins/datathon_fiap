@@ -80,6 +80,7 @@ python fastapi_app.py
 - `GET /model_info` - Informações do modelo
 - `GET /feature_importance` - Importância das features
 - `GET /mlflow_info` - Informações do MLflow
+- `GET /debug` - Debug e troubleshooting
 
 ### 4. Testes
 
@@ -172,11 +173,16 @@ O sistema utiliza o arquivo `dataset_preparado.csv` com as seguintes colunas pri
 
 **Features Computadas:**
 - `nivel_profissional_compatibility` - Compatibilidade de nível profissional
-- `nivel_academico_compatibility` - Compatibilidade de nível acadêmico
+- `nivel_profissional_match` - Match exato de nível profissional
+- `nivel_academico_match` - Match exato de nível acadêmico
 - `nivel_ingles_compatibility` - Compatibilidade de inglês
+- `nivel_ingles_match` - Match exato de inglês
 - `nivel_espanhol_compatibility` - Compatibilidade de espanhol
+- `nivel_espanhol_match` - Match exato de espanhol
 - `is_sp` - Candidato em São Paulo
 - `cv_has_technical_keywords` - CV com palavras-chave técnicas
+- `cv_length` - Comprimento do CV
+- `cv_has_certifications` - CV com certificações
 
 **Target:**
 - `contratado` - Variável alvo (0 ou 1)
@@ -215,7 +221,7 @@ Essas variáveis existem no dataset original, mas foram **EXCLUÍDAS** do treina
     "nivel_espanhol_vaga": "Básico",
     "vaga_sap": "Não",
     "competencia_tecnicas": "Python, Machine Learning",
-    "tipo_contratacao": "CLT"
+    "tipo_contratacao": "CLT Full"
   }
 }
 ```
@@ -438,8 +444,20 @@ fiap-final/
    - Container orchestration (Kubernetes)
    - Load balancing
 
+## Repositório
+
+- **GitHub**: https://github.com/fontesmartins/datathon_fiap.git
+- **Railway**: https://decision-recruitment.up.railway.app/
+
+## Suporte
+
+Para dúvidas ou suporte:
+- **Email**: ezequiel.martins2@icloud.com
+- **LinkedIn**: https://www.linkedin.com/in/fontesmartins23/
+- **GitHub**: https://github.com/fontesmartins/
+
 ---
 
 **Versão:** 1.0  
-**Última Atualização:** 28/09/2025  
+**Última Atualização:** 29/09/2025  
 **Autor:** Sistema de Recrutamento Inteligente
