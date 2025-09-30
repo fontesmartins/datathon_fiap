@@ -310,18 +310,21 @@ async def predict_match(request: PredictionRequest):
         X = prepare_features(request.candidate, request.job)
         
         # Fazer predição
-        prediction = model.predict(X)[0]
         probability = model.predict_proba(X)[0][1]
+        # Threshold ajustado para demonstração (dataset desbalanceado: 5.55% contratações)
+        prediction = 1 if probability > 0.02 else 0  # 2% em vez de 50%
         
         # Calcular confidence score
         confidence_score = abs(probability - 0.5) * 2
         
-        # Determinar recomendação
-        if prediction == 1 and probability > 0.7:
+        # Determinar recomendação (thresholds ajustados para demonstração)
+        if prediction == 1 and probability > 0.15:
             recommendation = "Alta recomendação para contratação"
-        elif prediction == 1 and probability > 0.5:
+        elif prediction == 1 and probability > 0.08:
             recommendation = "Recomendação moderada para contratação"
-        elif prediction == 0 and probability < 0.3:
+        elif prediction == 1 and probability > 0.02:
+            recommendation = "Recomendação baixa para contratação"
+        elif prediction == 0 and probability < 0.03:
             recommendation = "Não recomendado para contratação"
         else:
             recommendation = "Avaliação adicional necessária"
@@ -355,16 +358,19 @@ async def predict_batch(request: BatchPredictionRequest):
                 X = prepare_features(candidate, request.job)
                 
                 # Fazer predição
-                prediction = model.predict(X)[0]
                 probability = model.predict_proba(X)[0][1]
+                # Threshold ajustado para demonstração (dataset desbalanceado: 5.55% contratações)
+                prediction = 1 if probability > 0.02 else 0  # 2% em vez de 50%
                 confidence_score = abs(probability - 0.5) * 2
                 
-                # Determinar recomendação
-                if prediction == 1 and probability > 0.7:
+                # Determinar recomendação (thresholds ajustados para demonstração)
+                if prediction == 1 and probability > 0.15:
                     recommendation = "Alta recomendação"
-                elif prediction == 1 and probability > 0.5:
+                elif prediction == 1 and probability > 0.08:
                     recommendation = "Recomendação moderada"
-                elif prediction == 0 and probability < 0.3:
+                elif prediction == 1 and probability > 0.02:
+                    recommendation = "Recomendação baixa"
+                elif prediction == 0 and probability < 0.03:
                     recommendation = "Não recomendado"
                 else:
                     recommendation = "Avaliação adicional necessária"
