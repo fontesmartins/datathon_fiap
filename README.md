@@ -17,14 +17,53 @@ O **Decision Recruitment AI** é uma solução completa de Machine Learning que 
 ## Arquitetura
 
 ```
+┌─────────────────────────────────────────────────────────────────┐
+│                        DADOS DE ENTRADA                        │
+├─────────────────────────────────────────────────────────────────┤
+│  vagas.json     prospects.json     applicants.json             │
+│  14.081 vagas   14.222 prospecções  42.482 candidatos         │
+└─────────────────┬───────────────────┬───────────────────────────┘
+                  │                   │
+                  └─────────┬─────────┘
+                            │
+┌─────────────────────────────────────────────────────────────────┐
+│                    PIPELINE DE TREINAMENTO                     │
+├─────────────────────────────────────────────────────────────────┤
+│  Dataset Unificado → Feature Engineering → Otimização          │
+│  53.759 registros   28 features         Optuna + XGBoost      │
+│                                            ↓                   │
+│                                   Modelo Treinado              │
+│                                   AUC: 0.7946                  │
+└─────────────────────────────────────┬───────────────────────────┘
+                                      │
+┌─────────────────────────────────────────────────────────────────┐
+│                      MODELO PERSISTIDO                         │
+├─────────────────────────────────────────────────────────────────┤
+│  xgboost_model.pkl    label_encoders.pkl                       │
+│  scaler.pkl          model_metadata.json                       │
+└─────────────────────────────────────┬───────────────────────────┘
+                                      │
+┌─────────────────────────────────────────────────────────────────┐
+│                         API FASTAPI                            │
+├─────────────────────────────────────────────────────────────────┤
+│  /predict        /predict_batch     /health      /debug         │
+│  Individual      Lote               Status       Troubleshoot   │
+└─────────────────────────────────────┬───────────────────────────┘
+                                      │
+┌─────────────────────────────────────────────────────────────────┐
+│                        DEPLOYMENT                              │
+├─────────────────────────────────────────────────────────────────┤
+│  Railway (Produção)              Docker (Local/Staging)        │
+│  https://decision-recruitment    Container local               │
+│  .up.railway.app/                                             │
+└─────────────────────────────────────────────────────────────────┘
 
-Dados JSON Feature Eng. Modelo XGBoost 
-(Jobs, Props, & Preproc. Treinamento 
-Applicants) 
-
-Monitoramento API FastAPI Modelo Salvo 
-& Logs /predict (Pickle) 
-
+┌─────────────────────────────────────────────────────────────────┐
+│                      MLFLOW TRACKING                           │
+├─────────────────────────────────────────────────────────────────┤
+│  Experimentos    Model Registry    Feature Importance          │
+│  Métricas        Versionamento     Visualização                │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Dados
