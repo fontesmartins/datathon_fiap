@@ -68,7 +68,7 @@ Monitoramento API FastAPI Modelo Salvo
 ### 1. Clone o Repositório
 
 ```bash
-git clone https://github.com/fontesmartins/datathon_fiap
+git clone https://github.com/fontesmartins/datathon_fiap.git
 cd fiap-final
 ```
 
@@ -133,7 +133,6 @@ Content-Type: application/json
 "nivel_espanhol_vaga": "Básico",
 "vaga_sap": "Não",
 "competencia_tecnicas": "Python, Django, Flask, AWS, Docker",
-"cliente": "TechCorp",
 "tipo_contratacao": "CLT Full"
 }
 }
@@ -363,6 +362,7 @@ python main.py
 - Logging automático de predições em produção
 - Métricas de performance em tempo real
 - Endpoint `/mlflow_info` para informações do MLflow
+- Endpoint `/debug` para troubleshooting
 
 #### 5. **Monitoramento Avançado**
 ```bash
@@ -381,7 +381,7 @@ python main.py
 ## Próximos Passos
 
 ### Melhorias Planejadas
-- [ ] **MLflow Integration** - Experiment tracking e model registry
+- [x] **MLflow Integration** - Experiment tracking e model registry ✅
 - [ ] Interface web para usuários
 - [ ] Modelo de recomendação de vagas
 - [ ] Análise de sentimento em CVs
@@ -421,6 +421,8 @@ python fastapi_app.py
 - `POST /predict_batch` - Predição em lote
 - `GET /model_info` - Informações do modelo
 - `GET /feature_importance` - Importância das features
+- `GET /mlflow_info` - Informações do MLflow
+- `GET /debug` - Debug e troubleshooting
 
 ### 3. Testar API
 ```bash
